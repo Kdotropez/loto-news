@@ -11,6 +11,7 @@ import './action-buttons.css'
 import './globals-tablet.css'
 import './globals-mobile.css'
 import './globals-pastel-clean.css'
+import './force-colors.css'
 import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ subsets: ['latin'] })

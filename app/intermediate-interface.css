@@ -1,193 +1,40 @@
-/**
- * CSS SPÉCIFIQUE À L'INTERFACE INTERMÉDIAIRE
- * Styles uniquement pour IntermediateInterface.tsx
- */
-
-/* === EN-TÊTE MODE INTERMÉDIAIRE === */
+/* === INTERFACE INTERMÉDIAIRE - LAYOUT SEULEMENT === */
+/* Les couleurs sont gérées par force-colors.css */
 
 .intermediate-header {
-  background: linear-gradient(135deg, rgb(245 158 11), rgb(217 119 6)) !important; /* amber-500 to amber-600 */
-  color: white !important;
-  border-radius: 12px !important;
-  padding: 2rem !important;
-  cursor: pointer !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  background: linear-gradient(135deg, rgb(245, 158, 11), rgb(217, 119, 6));
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
 .intermediate-header:hover {
-  background: linear-gradient(135deg, rgb(217 119 6), rgb(180 83 9)) !important; /* amber-600 to amber-700 */
-  transform: scale(1.02) !important;
-  box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.2) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(245, 158, 11, 0.4);
 }
 
 .intermediate-header h1,
 .intermediate-header h1 *,
 .intermediate-header .text-3xl,
 .intermediate-header .font-bold {
-  color: white !important;
-  font-size: 1.875rem !important; /* text-3xl */
-  font-weight: bold !important;
-  margin-bottom: 0.5rem !important;
+  font-size: 1.875rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
 .intermediate-header p,
 .intermediate-header p *,
-.intermediate-header .text-lg,
-.intermediate-header .text-yellow-100 {
-  color: white !important; /* Force blanc */
-  font-size: 1.125rem !important; /* text-lg */
-  margin-bottom: 0.5rem !important;
+.intermediate-header .text-lg {
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
 }
 
-.intermediate-header .help-text {
-  color: white !important; /* Force blanc */
-  font-size: 0.875rem !important; /* text-sm */
-  opacity: 0.9 !important;
-}
-
-/* Force TOUS les textes dans l'en-tête à être blancs */
 .intermediate-header *,
 .intermediate-header span,
 .intermediate-header div,
 .intermediate-header svg {
-  color: white !important;
-}
-
-/* === NAVIGATION PAR ONGLETS === */
-
-.intermediate-tabs {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 0.5rem !important;
-  margin-bottom: 1.5rem !important;
-}
-
-.intermediate-tab {
-  padding: 0.75rem 1rem !important;
-  border-radius: 8px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-  border: 2px solid transparent !important;
-}
-
-.intermediate-tab.active {
-  background-color: rgb(245 158 11) !important; /* amber-500 */
-  color: white !important;
-  border-color: rgb(217 119 6) !important; /* amber-600 */
-  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3) !important;
-}
-
-.intermediate-tab.inactive {
-  background-color: rgb(249 250 251) !important; /* gray-50 */
-  color: rgb(75 85 99) !important; /* gray-600 */
-  border-color: rgb(209 213 219) !important; /* gray-300 */
-}
-
-.intermediate-tab.inactive:hover {
-  background-color: rgb(255 251 235) !important; /* amber-50 */
-  color: rgb(146 64 14) !important; /* amber-900 */
-  border-color: rgb(245 158 11) !important; /* amber-500 */
-}
-
-/* === CONTENEURS INTERMÉDIAIRES === */
-
-.intermediate-content {
-  background-color: white !important;
-  border-radius: 12px !important;
-  padding: 1.5rem !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-  border: 1px solid rgb(229 231 235) !important; /* gray-200 */
-}
-
-.intermediate-card {
-  background-color: rgb(255 251 235) !important; /* amber-50 */
-  border: 1px solid rgb(252 211 77) !important; /* amber-300 */
-  border-radius: 8px !important;
-  padding: 1rem !important;
-  margin-bottom: 1rem !important;
-}
-
-.intermediate-card h3 {
-  color: rgb(146 64 14) !important; /* amber-900 */
-  font-weight: 600 !important;
-  margin-bottom: 0.5rem !important;
-}
-
-.intermediate-card p {
-  color: rgb(180 83 9) !important; /* amber-700 */
-  font-size: 0.875rem !important; /* text-sm */
-}
-
-/* === BOUTONS INTERMÉDIAIRES === */
-
-.intermediate-btn-primary {
-  background: linear-gradient(135deg, rgb(245 158 11), rgb(217 119 6)) !important; /* amber gradient */
-  color: white !important;
-  padding: 0.75rem 1.5rem !important;
-  border-radius: 8px !important;
-  font-weight: 600 !important;
-  border: none !important;
-  cursor: pointer !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3) !important;
-}
-
-.intermediate-btn-primary:hover {
-  background: linear-gradient(135deg, rgb(217 119 6), rgb(180 83 9)) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.4) !important;
-}
-
-/* === AIDE CONTEXTUELLE === */
-
-.intermediate-help {
-  background-color: rgb(249 250 251) !important; /* gray-50 */
-  border: 1px solid rgb(209 213 219) !important; /* gray-300 */
-  border-radius: 8px !important;
-  padding: 1rem !important;
-}
-
-.intermediate-help .help-icon {
-  color: rgb(37 99 235) !important; /* blue-600 */
-}
-
-.intermediate-help .help-title {
-  color: rgb(31 41 55) !important; /* gray-800 */
-  font-weight: 600 !important;
-}
-
-.intermediate-help .help-text {
-  color: rgb(75 85 99) !important; /* gray-600 */
-  font-size: 0.875rem !important; /* text-sm */
-}
-
-/* === STATISTIQUES ET MÉTRIQUES === */
-
-.intermediate-stats {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
-  gap: 1rem !important;
-  margin: 1rem 0 !important;
-}
-
-.intermediate-stat-card {
-  background-color: white !important;
-  border: 1px solid rgb(252 211 77) !important; /* amber-300 */
-  border-radius: 8px !important;
-  padding: 1rem !important;
-  text-align: center !important;
-}
-
-.intermediate-stat-value {
-  color: rgb(245 158 11) !important; /* amber-500 */
-  font-size: 1.5rem !important; /* text-2xl */
-  font-weight: bold !important;
-}
-
-.intermediate-stat-label {
-  color: rgb(146 64 14) !important; /* amber-900 */
-  font-size: 0.875rem !important; /* text-sm */
-  font-weight: 600 !important;
+  /* Layout seulement - couleurs dans force-colors.css */
 }

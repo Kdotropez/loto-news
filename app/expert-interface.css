@@ -1,235 +1,40 @@
-/**
- * CSS SPÉCIFIQUE À L'INTERFACE EXPERT
- * Styles uniquement pour ExpertInterface.tsx
- */
-
-/* === EN-TÊTE MODE EXPERT === */
+/* === INTERFACE EXPERT - LAYOUT SEULEMENT === */
+/* Les couleurs sont gérées par force-colors.css */
 
 .expert-header {
-  background: linear-gradient(135deg, rgb(239 68 68), rgb(220 38 38)) !important; /* rose-500 to rose-600 */
-  color: white !important;
-  border-radius: 12px !important;
-  padding: 2rem !important;
-  cursor: pointer !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  background: linear-gradient(135deg, rgb(244, 63, 94), rgb(225, 29, 72));
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(244, 63, 94, 0.3);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
 .expert-header:hover {
-  background: linear-gradient(135deg, rgb(220 38 38), rgb(185 28 28)) !important; /* rose-600 to rose-700 */
-  transform: scale(1.02) !important;
-  box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.2) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(244, 63, 94, 0.4);
 }
 
 .expert-header h1,
 .expert-header h1 *,
 .expert-header .text-3xl,
 .expert-header .font-bold {
-  color: white !important;
-  font-size: 1.875rem !important; /* text-3xl */
-  font-weight: bold !important;
-  margin-bottom: 0.5rem !important;
+  font-size: 1.875rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
 .expert-header p,
 .expert-header p *,
-.expert-header .text-lg,
-.expert-header .text-red-100 {
-  color: white !important; /* Force blanc */
-  font-size: 1.125rem !important; /* text-lg */
-  margin-bottom: 0.5rem !important;
+.expert-header .text-lg {
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
 }
 
-.expert-header .help-text {
-  color: white !important; /* Force blanc */
-  font-size: 0.875rem !important; /* text-sm */
-  opacity: 0.9 !important;
-}
-
-/* Force TOUS les textes dans l'en-tête à être blancs */
 .expert-header *,
 .expert-header span,
 .expert-header div,
 .expert-header svg {
-  color: white !important;
-}
-
-/* === NAVIGATION EXPERT === */
-
-.expert-categories {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 0.5rem !important;
-  margin-bottom: 1rem !important;
-}
-
-.expert-category {
-  padding: 0.75rem 1rem !important;
-  border-radius: 8px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-  border: 2px solid transparent !important;
-}
-
-.expert-category.active {
-  background: linear-gradient(135deg, rgb(239 68 68), rgb(244 63 94)) !important; /* rose gradient */
-  color: white !important;
-  border-color: rgb(220 38 38) !important; /* rose-600 */
-  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3) !important;
-}
-
-.expert-category.inactive {
-  background-color: rgb(249 250 251) !important; /* gray-50 */
-  color: rgb(75 85 99) !important; /* gray-600 */
-  border-color: rgb(209 213 219) !important; /* gray-300 */
-}
-
-.expert-category.inactive:hover {
-  background-color: rgb(255 241 242) !important; /* rose-50 */
-  color: rgb(159 18 57) !important; /* rose-900 */
-  border-color: rgb(239 68 68) !important; /* rose-500 */
-}
-
-/* === ONGLETS EXPERT === */
-
-.expert-tabs {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 0.25rem !important;
-  margin-bottom: 1.5rem !important;
-}
-
-.expert-tab {
-  padding: 0.5rem 1rem !important;
-  border-radius: 6px !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-  font-size: 0.875rem !important; /* text-sm */
-}
-
-.expert-tab.active {
-  background-color: rgb(239 68 68) !important; /* rose-500 */
-  color: white !important;
-  box-shadow: 0 1px 3px rgba(239, 68, 68, 0.3) !important;
-}
-
-.expert-tab.inactive {
-  background-color: rgb(243 244 246) !important; /* gray-100 */
-  color: rgb(107 114 128) !important; /* gray-500 */
-}
-
-.expert-tab.inactive:hover {
-  background-color: rgb(255 241 242) !important; /* rose-50 */
-  color: rgb(190 18 60) !important; /* rose-800 */
-}
-
-/* === CONTENEURS EXPERT === */
-
-.expert-content {
-  background-color: white !important;
-  border-radius: 12px !important;
-  padding: 1.5rem !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-  border: 1px solid rgb(229 231 235) !important; /* gray-200 */
-}
-
-.expert-panel {
-  background-color: rgb(255 241 242) !important; /* rose-50 */
-  border: 1px solid rgb(251 113 133) !important; /* rose-300 */
-  border-radius: 8px !important;
-  padding: 1rem !important;
-  margin-bottom: 1rem !important;
-}
-
-.expert-panel h3 {
-  color: rgb(159 18 57) !important; /* rose-900 */
-  font-weight: 600 !important;
-  margin-bottom: 0.5rem !important;
-}
-
-.expert-panel p {
-  color: rgb(190 18 60) !important; /* rose-800 */
-  font-size: 0.875rem !important; /* text-sm */
-}
-
-/* === BOUTONS EXPERT === */
-
-.expert-btn-primary {
-  background: linear-gradient(135deg, rgb(239 68 68), rgb(220 38 38)) !important; /* rose gradient */
-  color: white !important;
-  padding: 0.75rem 1.5rem !important;
-  border-radius: 8px !important;
-  font-weight: 600 !important;
-  border: none !important;
-  cursor: pointer !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3) !important;
-}
-
-.expert-btn-primary:hover {
-  background: linear-gradient(135deg, rgb(220 38 38), rgb(185 28 28)) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4) !important;
-}
-
-.expert-btn-secondary {
-  background-color: rgb(249 250 251) !important; /* gray-50 */
-  color: rgb(239 68 68) !important; /* rose-500 */
-  padding: 0.75rem 1.5rem !important;
-  border: 2px solid rgb(239 68 68) !important; /* rose-500 */
-  border-radius: 8px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-}
-
-.expert-btn-secondary:hover {
-  background-color: rgb(255 241 242) !important; /* rose-50 */
-  border-color: rgb(220 38 38) !important; /* rose-600 */
-}
-
-/* === MÉTRIQUES DE PERFORMANCE === */
-
-.expert-metrics {
-  background: linear-gradient(135deg, rgb(249 250 251), rgb(243 244 246)) !important; /* gray gradient */
-  border: 1px solid rgb(209 213 219) !important; /* gray-300 */
-  border-radius: 8px !important;
-  padding: 1rem !important;
-}
-
-.expert-metric {
-  display: inline-block !important;
-  background-color: white !important;
-  border: 1px solid rgb(239 68 68) !important; /* rose-500 */
-  border-radius: 6px !important;
-  padding: 0.25rem 0.5rem !important;
-  margin: 0.25rem !important;
-  font-size: 0.75rem !important; /* text-xs */
-  color: rgb(239 68 68) !important; /* rose-500 */
-  font-weight: 600 !important;
-}
-
-/* === PANNEAU D'INFORMATIONS === */
-
-.expert-info-panel {
-  background: linear-gradient(135deg, rgb(249 250 251), rgb(239 246 255)) !important; /* gray to blue */
-  border: 1px solid rgb(209 213 219) !important; /* gray-300 */
-  border-radius: 8px !important;
-  padding: 1rem !important;
-}
-
-.expert-info-panel .panel-icon {
-  color: rgb(37 99 235) !important; /* blue-600 */
-}
-
-.expert-info-panel .panel-title {
-  color: rgb(31 41 55) !important; /* gray-800 */
-  font-weight: 600 !important;
-}
-
-.expert-info-panel .panel-text {
-  color: rgb(75 85 99) !important; /* gray-600 */
-  font-size: 0.875rem !important; /* text-sm */
+  /* Layout seulement - couleurs dans force-colors.css */
 }

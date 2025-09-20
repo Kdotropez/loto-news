@@ -1,0 +1,12 @@
+/* === CSS SIMPLIFIÉ - AUCUN FORÇAGE === */
+/* On laisse les styles inline prendre le contrôle total */
+
+/* Seulement les règles essentielles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}

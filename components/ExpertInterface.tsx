@@ -295,7 +295,7 @@ export default function ExpertInterface({
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-1 px-3 py-2 rounded text-sm font-medium transition-all ${
                     isActive
-                      ? 'bg-blue-500 text-white'
+                      ? 'bg-orange-500 text-white'
                       : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                   }`}
                 >
@@ -323,7 +323,7 @@ export default function ExpertInterface({
       {!compactMode && (
         <div className="bg-gradient-to-r from-gray-50 to-blue-50 border border-gray-200 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="text-blue-600">🎯</div>
+            <div className="text-orange-600">🎯</div>
             <span className="font-semibold text-gray-800">Mode Expert Actif</span>
           </div>
           <p className="text-gray-700 text-sm">

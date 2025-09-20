@@ -197,8 +197,8 @@ export default function IntermediateInterface({
         </div>
         
         {/* Description de l'onglet actif */}
-        <div className="bg-blue-50 rounded-lg p-3 mb-6">
-          <p className="text-blue-700 text-sm">
+        <div className="bg-orange-50 rounded-lg p-3 mb-6">
+          <p className="text-orange-700 text-sm">
             {tabs.find(t => t.id === activeTab)?.description}
           </p>
         </div>
@@ -217,7 +217,7 @@ export default function IntermediateInterface({
       {/* Aide contextuelle */}
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
         <div className="flex items-center gap-2 mb-2">
-          <div className="text-blue-600">💡</div>
+          <div className="text-orange-600">💡</div>
           <span className="font-semibold text-gray-800">Conseil</span>
         </div>
         <p className="text-gray-700 text-sm">

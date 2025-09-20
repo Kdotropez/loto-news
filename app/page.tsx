@@ -14,7 +14,6 @@ import toast from 'react-hot-toast';
 import Header from '@/components/Header';
 import MobileHeader from '@/components/MobileHeader';
 import PhoneBanner from '@/components/PhoneBanner';
-import MobileNavigation from '@/components/MobileNavigation';
 import TabletOptimizedWrapper from '@/components/TabletOptimizedWrapper';
 import Footer from '@/components/Footer';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -87,13 +86,13 @@ function OriginalHome() {
               animate={{ opacity: 1, scale: 1 }}
               className={`relative rounded-xl border-2 p-6 cursor-pointer transition-all ${
                 selectedVersion === 'current'
-                  ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-500 ring-opacity-50'
+                  ? 'border-orange-500 bg-orange-50 ring-2 ring-orange-500 ring-opacity-50'
                   : 'border-gray-200 bg-white hover:border-gray-300'
               }`}
               onClick={() => setSelectedVersion('current')}
             >
               {selectedVersion === 'current' && (
-                <div className="absolute -top-3 -right-3 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center">
+                <div className="absolute -top-3 -right-3 w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center">
                   <CheckCircle className="w-5 h-5" />
                 </div>
               )}
@@ -152,13 +151,13 @@ function OriginalHome() {
               
               <div className="space-y-3 mb-8">
                 <p className="text-sm text-gray-700 flex items-center gap-2">
-                  <span className="text-blue-500">🚀</span> 3 interfaces natives
+                  <span className="text-orange-500">🚀</span> 3 interfaces natives
                 </p>
                 <p className="text-sm text-gray-700 flex items-center gap-2">
-                  <span className="text-blue-500">📱</span> Mobile/Tablette/Desktop
+                  <span className="text-orange-500">📱</span> Mobile/Tablette/Desktop
                 </p>
                 <p className="text-sm text-gray-700 flex items-center gap-2">
-                  <span className="text-blue-500">⚡</span> Performance optimisée
+                  <span className="text-orange-500">⚡</span> Performance optimisée
                 </p>
               </div>
 
@@ -510,14 +509,6 @@ function CurrentVersionInterface() {
 
         {!isMobile && <Footer />}
         
-        {/* Navigation Mobile */}
-        {isMobile && (
-          <MobileNavigation
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            complexityLevel={complexityLevel}
-          />
-        )}
       </div>
 
       {/* Modal de sélection de complexité */}
@@ -1065,7 +1056,7 @@ function NewVersionInterface() {
       {renderDeviceHeader()}
       
       <main className={`container mx-auto px-4 ${
-        deviceType === 'mobile' ? 'py-4 pb-24' : 
+        deviceType === 'mobile' ? 'py-4' : 
         deviceType === 'tablet' ? 'py-6' : 
         'py-8'
       }`}>
@@ -1074,25 +1065,6 @@ function NewVersionInterface() {
         {/* Contenu principal de votre app Loto */}
         {renderLotoContent()}
 
-        {/* Navigation spécialisée selon l'appareil avec couleurs pastels */}
-        {deviceType === 'mobile' && (
-          <div className="fixed bottom-0 left-0 right-0 bg-emerald-500 text-white p-2 z-30">
-            <div className="flex justify-around">
-              <button className="flex flex-col items-center gap-1 px-3 py-2 hover:bg-emerald-600 rounded-lg transition-colors">
-                <Database className="w-5 h-5" />
-                <span className="text-xs">Analyse</span>
-              </button>
-              <button className="flex flex-col items-center gap-1 px-3 py-2 hover:bg-emerald-600 rounded-lg transition-colors">
-                <ArrowRight className="w-5 h-5" />
-                <span className="text-xs">Grilles</span>
-              </button>
-              <button className="flex flex-col items-center gap-1 px-3 py-2 hover:bg-emerald-600 rounded-lg transition-colors">
-                <CheckCircle className="w-5 h-5" />
-                <span className="text-xs">Stats</span>
-              </button>
-            </div>
-          </div>
-        )}
       </main>
 
       {/* Modal de sélection de complexité */}
