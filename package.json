@@ -1,0 +1,39 @@
+{
+  "name": "loto-analyzer",
+  "version": "1.0.0",
+  "description": "Application d'analyse du Loto National français",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "autoprefixer": "^10.4.0",
+    "better-sqlite3": "^12.2.0",
+    "framer-motion": "^10.16.0",
+    "jsdom": "^27.0.0",
+    "lucide-react": "^0.292.0",
+    "next": "^14.0.0",
+    "node-fetch": "^3.3.2",
+    "pdf-parse": "^1.1.1",
+    "postcss": "^8.4.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-hot-toast": "^2.4.0",
+    "recharts": "^3.2.0",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7",
+    "@types/pdf-parse": "^1.1.5",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.0.0"
+  }
+}

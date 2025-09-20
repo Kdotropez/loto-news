@@ -1,0 +1,183 @@
+/**
+ * CSS SPÉCIFIQUE À L'INTERFACE DÉBUTANT
+ * Styles uniquement pour BeginnerInterface.tsx
+ */
+
+/* === EN-TÊTE MODE DÉBUTANT === */
+
+.beginner-header {
+  background: linear-gradient(135deg, rgb(34 197 94), rgb(22 163 74)) !important; /* emerald-500 to emerald-600 */
+  color: white !important;
+  border-radius: 12px !important;
+  padding: 2rem !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.beginner-header:hover {
+  background: linear-gradient(135deg, rgb(22 163 74), rgb(21 128 61)) !important; /* emerald-600 to emerald-700 */
+  transform: scale(1.02) !important;
+  box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.2) !important;
+}
+
+.beginner-header h1,
+.beginner-header h1 *,
+.beginner-header .text-3xl,
+.beginner-header .font-bold {
+  color: white !important;
+  font-size: 1.875rem !important; /* text-3xl */
+  font-weight: bold !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.beginner-header p,
+.beginner-header p *,
+.beginner-header .text-lg,
+.beginner-header .text-green-100 {
+  color: white !important; /* Force blanc au lieu de emerald-100 */
+  font-size: 1.125rem !important; /* text-lg */
+  margin-bottom: 0.5rem !important;
+}
+
+.beginner-header .help-text {
+  color: white !important; /* Force blanc */
+  font-size: 0.875rem !important; /* text-sm */
+  opacity: 0.9 !important;
+}
+
+/* Force TOUS les textes dans l'en-tête à être blancs */
+.beginner-header *,
+.beginner-header span,
+.beginner-header div,
+.beginner-header svg {
+  color: white !important;
+}
+
+/* === INDICATEUR DE PROGRESSION === */
+
+.beginner-progress {
+  background-color: white !important;
+  border-radius: 12px !important;
+  padding: 1.5rem !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgb(229 231 235) !important; /* gray-200 */
+}
+
+.beginner-progress h2 {
+  color: rgb(31 41 55) !important; /* gray-800 */
+  font-size: 1.25rem !important; /* text-xl */
+  font-weight: bold !important;
+  margin-bottom: 1rem !important;
+}
+
+/* === ÉTAPES === */
+
+.beginner-step {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  padding: 0.75rem !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.beginner-step.active {
+  background-color: rgb(236 253 245) !important; /* emerald-50 */
+  border: 2px solid rgb(34 197 94) !important; /* emerald-500 */
+}
+
+.beginner-step.completed {
+  background-color: rgb(240 253 244) !important; /* emerald-50 */
+  border: 2px solid rgb(34 197 94) !important; /* emerald-500 */
+}
+
+.beginner-step.pending {
+  background-color: rgb(249 250 251) !important; /* gray-50 */
+  border: 2px solid rgb(209 213 219) !important; /* gray-300 */
+}
+
+/* === BOUTONS DÉBUTANT === */
+
+.beginner-btn-primary {
+  background: linear-gradient(135deg, rgb(34 197 94), rgb(22 163 74)) !important; /* emerald gradient */
+  color: white !important;
+  padding: 1rem 2rem !important;
+  border-radius: 12px !important;
+  font-weight: bold !important;
+  font-size: 1.125rem !important; /* text-lg */
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.3) !important;
+}
+
+.beginner-btn-primary:hover {
+  background: linear-gradient(135deg, rgb(22 163 74), rgb(21 128 61)) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 15px -3px rgba(34, 197, 94, 0.4) !important;
+}
+
+.beginner-btn-primary:disabled {
+  background: rgb(156 163 175) !important; /* gray-400 */
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.beginner-btn-secondary {
+  background: linear-gradient(135deg, rgb(34 197 94), rgb(22 163 74)) !important;
+  color: white !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.beginner-btn-secondary:hover {
+  background: linear-gradient(135deg, rgb(22 163 74), rgb(21 128 61)) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* === CONTENEURS SPÉCIAUX === */
+
+.beginner-selection-display {
+  background-color: rgb(239 246 255) !important; /* blue-50 */
+  border: 1px solid rgb(147 197 253) !important; /* blue-300 */
+  border-radius: 8px !important;
+  padding: 1rem !important;
+}
+
+.beginner-grid-container {
+  background-color: white !important;
+  border-radius: 12px !important;
+  padding: 1.5rem !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgb(229 231 235) !important; /* gray-200 */
+}
+
+/* === AIDE CONTEXTUELLE === */
+
+.beginner-help {
+  background-color: rgb(255 251 235) !important; /* amber-50 */
+  border: 1px solid rgb(252 211 77) !important; /* amber-300 */
+  border-radius: 8px !important;
+  padding: 1rem !important;
+}
+
+.beginner-help .help-icon {
+  color: rgb(245 158 11) !important; /* amber-500 */
+}
+
+.beginner-help .help-title {
+  color: rgb(146 64 14) !important; /* amber-900 */
+  font-weight: 600 !important;
+}
+
+.beginner-help .help-text {
+  color: rgb(180 83 9) !important; /* amber-700 */
+  font-size: 0.875rem !important; /* text-sm */
+}

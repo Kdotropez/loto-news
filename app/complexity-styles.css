@@ -1,0 +1,130 @@
+/* STYLES POUR LES NIVEAUX DE COMPLEXITÉ */
+
+/* Mode Débutant - Interface épurée */
+.complexity-beginner {
+  /* Simplification des éléments */
+}
+
+.complexity-beginner .advanced-feature {
+  display: none !important;
+}
+
+.complexity-beginner .technical-details {
+  display: none !important;
+}
+
+/* Mode Intermédiaire - Interface équilibrée */
+.complexity-intermediate {
+  /* Affichage sélectif */
+}
+
+.complexity-intermediate .expert-only {
+  display: none !important;
+}
+
+.complexity-intermediate .math-formulas {
+  display: none !important;
+}
+
+/* Mode Expert - Interface complète */
+.complexity-expert {
+  /* Tous les éléments visibles */
+}
+
+/* Animations pour les transitions de mode */
+.complexity-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Indicateurs visuels par niveau */
+.complexity-indicator {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.complexity-indicator.beginner {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.complexity-indicator.intermediate {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+.complexity-indicator.expert {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+/* Masquage conditionnel */
+.hide-in-beginner {
+  display: block;
+}
+
+.complexity-beginner .hide-in-beginner {
+  display: none !important;
+}
+
+.hide-in-intermediate {
+  display: block;
+}
+
+.complexity-intermediate .hide-in-intermediate {
+  display: none !important;
+}
+
+.show-expert-only {
+  display: none;
+}
+
+.complexity-expert .show-expert-only {
+  display: block !important;
+}
+
+/* Styles spéciaux pour les modals de complexité */
+.complexity-modal {
+  backdrop-filter: blur(8px);
+}
+
+.complexity-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.complexity-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.complexity-card.selected {
+  transform: scale(1.02);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+}
+
+/* Animations pour les changements de niveau */
+@keyframes levelChange {
+  0% { opacity: 0; transform: scale(0.95); }
+  50% { opacity: 0.5; transform: scale(1.02); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.level-change-animation {
+  animation: levelChange 0.5s ease-in-out;
+}
+
+/* Responsive pour les indicateurs de mode */
+@media (max-width: 768px) {
+  .complexity-indicator {
+    top: 10px;
+    right: 10px;
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+}
