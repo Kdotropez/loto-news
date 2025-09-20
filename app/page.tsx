@@ -28,6 +28,12 @@ import LudicrousModeSelector from '@/components/LudicrousModeSelector';
 import { complexityManager, ComplexityLevel } from '@/lib/complexity-manager';
 
 export default function Home() {
+  // Aller directement à l'interface moderne
+  return <NewVersionInterface />;
+}
+
+// Fonction Home originale gardée pour référence
+function OriginalHome() {
   const [selectedVersion, setSelectedVersion] = useState<'current' | 'new' | null>(null);
   const [showSelector, setShowSelector] = useState(true);
 
@@ -1109,3 +1115,5 @@ function NewVersionInterface() {
     </div>
   );
 }
+
+// Fin de la fonction OriginalHome gardée pour référence
