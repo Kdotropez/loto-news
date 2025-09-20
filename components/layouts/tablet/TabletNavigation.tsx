@@ -12,7 +12,7 @@ interface NavigationItem {
   id: string;
   label: string;
   icon: any;
-  component?: React.ComponentType;
+  component?: React.ComponentType<any>;
 }
 
 interface TabletNavigationProps {

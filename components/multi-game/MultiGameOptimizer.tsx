@@ -51,28 +51,28 @@ export default function MultiGameOptimizer() {
 
     switch (activeTab) {
       case 'simple-generation':
-        return <SimpleGenerationTab {...commonProps} />;
+        return <SimpleGenerationTab />;
       
       case 'best-numbers':
-        return <BestNumbersTab {...commonProps} />;
+        return <BestNumbersTab  />;
       
       case 'simple-games':
-        return <SimpleGamesTab {...commonProps} />;
+        return <SimpleGamesTab  />;
       
       case 'multi-grids':
-        return <MultiGridsTab {...commonProps} />;
+        return <MultiGridsTab  />;
       
       case 'strategies':
-        return <StrategiesTab {...commonProps} />;
+        return <StrategiesTab  />;
       
       case 'budget-optimization':
-        return <BudgetOptimizationTab {...commonProps} />;
+        return <BudgetOptimizationTab  />;
       
       case 'strategy-controls':
-        return <StrategyControlsTab {...commonProps} />;
+        return <StrategyControlsTab  />;
       
       default:
-        return <BestNumbersTab {...commonProps} />;
+        return <BestNumbersTab  />;
     }
   };
 

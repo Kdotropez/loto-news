@@ -35,7 +35,7 @@ interface ResponsiveRouterProps {
     icon: any;
     color?: string;
     badge?: string | number;
-    component?: React.ComponentType;
+    component?: React.ComponentType<any>;
   }>;
   
   // Configuration spécifique desktop

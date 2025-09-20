@@ -7,6 +7,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Smartphone, Tablet, Monitor } from 'lucide-react';
 
 export default function SimpleTestPage() {
   const [version, setVersion] = useState<'legacy' | 'responsive'>('legacy');

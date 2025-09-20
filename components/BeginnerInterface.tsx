@@ -18,6 +18,7 @@ import SimpleUnifiedAnalysis from './SimpleUnifiedAnalysis';
 import DreamyProgressBar from './DreamyProgressBar';
 import ActionButtons from './ActionButtons';
 import { savedGridsManager } from '../lib/saved-grids-manager';
+import { ComplexityLevel } from '../lib/complexity-manager';
 
 interface BeginnerInterfaceProps {
   globalAnalysisPeriod: string;
@@ -212,11 +213,6 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
     // La logique de sauvegarde existante s'exécutera
   };
 
-  const handleComplexityChange = (newLevel: ComplexityLevel) => {
-    setShowComplexitySelector(false);
-    // Recharger la page pour appliquer le nouveau niveau
-    window.location.reload();
-  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">

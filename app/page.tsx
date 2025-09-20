@@ -739,8 +739,9 @@ function NewVersionInterface() {
 
   // Handler pour afficher les détails du countdown
   const handleShowCountdown = () => {
-    toast.info(`Prochain tirage dans : ${countdown}`, {
+    toast(`Prochain tirage dans : ${countdown}`, {
       duration: 3000,
+      icon: '⏰',
     });
   };
 
