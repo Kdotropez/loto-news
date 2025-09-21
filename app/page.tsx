@@ -27,8 +27,243 @@ import LudicrousModeSelector from '@/components/LudicrousModeSelector';
 import { complexityManager, ComplexityLevel } from '@/lib/complexity-manager';
 
 export default function Home() {
-  // Aller directement à l'interface moderne
-  return <NewVersionInterface />;
+  // Page d'accueil avec sélection des modes
+  return <ModeSelectionInterface />;
+}
+
+// Interface de sélection des modes
+function ModeSelectionInterface() {
+  const [selectedMode, setSelectedMode] = useState<ComplexityLevel | null>(null);
+
+  // Si un mode est sélectionné, afficher l'interface correspondante
+  if (selectedMode) {
+    return <NewVersionInterface 
+      initialMode={selectedMode} 
+      onBackToModeSelection={() => setSelectedMode(null)}
+    />;
+  }
+
+  // Page de sélection des modes
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
+      {/* Particules flottantes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-teal-300/30 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0.3, 0.8, 0.3],
+              scale: [0.5, 1, 0.5],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="relative z-10 container mx-auto px-4 py-12">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-16"
+        >
+          <motion.div
+            animate={{ rotate: [0, 5, -5, 0] }}
+            transition={{ duration: 4, repeat: Infinity }}
+            className="text-8xl mb-6"
+          >
+            🎰
+          </motion.div>
+          
+          <h1 className="text-5xl md:text-6xl font-bold text-teal-800 mb-4">
+            ✨ Loto de Rêve ✨
+          </h1>
+          
+          <p className="text-xl text-teal-600 mb-2">
+            Choisissez votre niveau d'expérience
+          </p>
+          
+          <motion.div
+            animate={{ opacity: [0.7, 1, 0.7] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="text-teal-500"
+          >
+            🍀 Votre fortune vous attend 🍀
+          </motion.div>
+        </motion.div>
+
+        {/* Sélection des modes */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {/* Mode Débutant */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="relative group cursor-pointer"
+            onClick={() => setSelectedMode('beginner')}
+            whileHover={{ scale: 1.05, y: -10 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <div className="bg-gradient-to-br from-emerald-400 to-teal-500 rounded-3xl p-8 shadow-2xl border-4 border-emerald-300 h-full">
+              {/* Effet de brillance */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent rounded-3xl pointer-events-none"></div>
+              
+              <div className="relative z-10 text-center text-white">
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="text-6xl mb-4"
+                >
+                  🌱
+                </motion.div>
+                
+                <h3 className="text-2xl font-bold mb-3">Mode Débutant</h3>
+                <p className="text-emerald-100 mb-4 text-sm">
+                  Interface simple et guidée pour découvrir le loto
+                </p>
+                
+                <div className="bg-white/20 rounded-lg p-3 text-xs">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Sélection IA automatique</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Génération simple</span>
+                  </div>
+                </div>
+                
+                <motion.div
+                  className="mt-4 bg-emerald-600 rounded-full py-2 px-4 text-sm font-bold"
+                  whileHover={{ bg: "#059669" }}
+                >
+                  🚀 COMMENCER
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Mode Intermédiaire */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="relative group cursor-pointer"
+            onClick={() => setSelectedMode('intermediate')}
+            whileHover={{ scale: 1.05, y: -10 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <div className="bg-gradient-to-br from-amber-400 to-orange-500 rounded-3xl p-8 shadow-2xl border-4 border-amber-300 h-full">
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent rounded-3xl pointer-events-none"></div>
+              
+              <div className="relative z-10 text-center text-white">
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1], rotate: [0, -5, 5, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="text-6xl mb-4"
+                >
+                  ⚡
+                </motion.div>
+                
+                <h3 className="text-2xl font-bold mb-3">Mode Intermédiaire</h3>
+                <p className="text-amber-100 mb-4 text-sm">
+                  Plus d'options et d'analyses pour optimiser vos chances
+                </p>
+                
+                <div className="bg-white/20 rounded-lg p-3 text-xs">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Analyses avancées</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Stratégies multiples</span>
+                  </div>
+                </div>
+                
+                <motion.div
+                  className="mt-4 bg-amber-600 rounded-full py-2 px-4 text-sm font-bold"
+                  whileHover={{ bg: "#d97706" }}
+                >
+                  ⚡ EXPLORER
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Mode Expert */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="relative group cursor-pointer"
+            onClick={() => setSelectedMode('expert')}
+            whileHover={{ scale: 1.05, y: -10 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <div className="bg-gradient-to-br from-purple-400 to-indigo-500 rounded-3xl p-8 shadow-2xl border-4 border-purple-300 h-full">
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent rounded-3xl pointer-events-none"></div>
+              
+              <div className="relative z-10 text-center text-white">
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1], rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="text-6xl mb-4"
+                >
+                  🎯
+                </motion.div>
+                
+                <h3 className="text-2xl font-bold mb-3">Mode Expert</h3>
+                <p className="text-purple-100 mb-4 text-sm">
+                  Contrôle total avec analyses statistiques poussées
+                </p>
+                
+                <div className="bg-white/20 rounded-lg p-3 text-xs">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Statistiques complètes</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Contrôle avancé</span>
+                  </div>
+                </div>
+                
+                <motion.div
+                  className="mt-4 bg-purple-600 rounded-full py-2 px-4 text-sm font-bold"
+                  whileHover={{ bg: "#7c3aed" }}
+                >
+                  🎯 MAÎTRISER
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Footer */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="text-center mt-16 text-teal-600"
+        >
+          <p className="text-sm">
+            ✨ Chaque mode vous mènera à l'étape de sélection des numéros ✨
+          </p>
+        </motion.div>
+      </div>
+    </div>
+  );
 }
 
 // Fonction Home originale gardée pour référence
@@ -524,7 +759,13 @@ function CurrentVersionInterface() {
 }
 
 // Nouvelle interface 3-en-1 avec votre vraie app Loto
-function NewVersionInterface() {
+function NewVersionInterface({ 
+  initialMode = 'beginner', 
+  onBackToModeSelection 
+}: { 
+  initialMode?: ComplexityLevel;
+  onBackToModeSelection?: () => void;
+}) {
   const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
   
   // États principaux de votre app Loto (identiques à la version actuelle)
@@ -534,10 +775,11 @@ function NewVersionInterface() {
   const [globalRemainingCombinationsSecondTirage, setGlobalRemainingCombinationsSecondTirage] = useState<number>(1906884);
   const [chanceLevel, setChanceLevel] = useState<number>(0);
   const [lastDraw, setLastDraw] = useState<any>(null);
-  const [complexityLevel, setComplexityLevel] = useState<ComplexityLevel>('beginner');
+  const [complexityLevel, setComplexityLevel] = useState<ComplexityLevel>(initialMode);
   const [showComplexitySelector, setShowComplexitySelector] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showModeSelection, setShowModeSelection] = useState(false);
   
   const [dataStatus, setDataStatus] = useState<{
     hasData: boolean;
@@ -839,9 +1081,9 @@ function NewVersionInterface() {
                   {/* Boutons de contrôle Mobile */}
                   <div className="flex gap-1">
                     <button
-                      onClick={() => setShowLudicrousSelector(true)}
+                      onClick={() => onBackToModeSelection && onBackToModeSelection()}
                       className="banner-hamburger-mobile"
-                      title="Changer de mode"
+                      title="Retour sélection des modes"
                       style={{
                         width: '48px',
                         height: '48px',
@@ -854,12 +1096,12 @@ function NewVersionInterface() {
                     >
                       <div style={{
                         color: 'white',
-                        fontSize: '24px',
+                        fontSize: '20px',
                         fontWeight: 'bold',
                         lineHeight: '1',
                         textAlign: 'center'
                       }}>
-                        ≡
+                        🏠
                       </div>
                     </button>
                     <div className="banner-button banner-draw-mobile">
@@ -878,10 +1120,30 @@ function NewVersionInterface() {
                         )}
                       </div>
                     </div>
-                    <div className="banner-button banner-countdown-mobile">
-                      <Clock3 className="w-4 h-4" />
-                      <span>{countdown || 'Calcul...'}</span>
-                    </div>
+                    <button
+                      onClick={() => {
+                        // TODO: Implémenter la sélection IA automatique
+                        toast.success('🤖 Sélection IA en cours de développement');
+                      }}
+                      className="banner-button banner-countdown-mobile"
+                      title="Numéros sélectionnés par IA"
+                      style={{
+                        cursor: 'pointer',
+                        border: 'none',
+                        backgroundColor: 'transparent'
+                      }}
+                    >
+                      <div style={{
+                        color: 'white',
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                        lineHeight: '1',
+                        textAlign: 'center'
+                      }}>
+                        🤖
+                      </div>
+                      <span style={{ fontSize: '10px' }}>IA</span>
+                    </button>
                   </div>
                 </div>
                 <div className="text-right">
@@ -902,9 +1164,9 @@ function NewVersionInterface() {
                   {/* Boutons de contrôle Tablet */}
                   <div className="flex gap-2">
                     <button
-                      onClick={() => setShowLudicrousSelector(true)}
+                      onClick={() => onBackToModeSelection && onBackToModeSelection()}
                       className="banner-hamburger-tablet"
-                      title="Changer de mode"
+                      title="Retour sélection des modes"
                       style={{
                         width: '56px',
                         height: '56px',
@@ -917,12 +1179,12 @@ function NewVersionInterface() {
                     >
                       <div style={{
                         color: 'white',
-                        fontSize: '28px',
+                        fontSize: '24px',
                         fontWeight: 'bold',
                         lineHeight: '1',
                         textAlign: 'center'
                       }}>
-                        ≡
+                        🏠
                       </div>
                     </button>
                     <div className="banner-button banner-draw-tablet">
@@ -941,10 +1203,30 @@ function NewVersionInterface() {
                         )}
                       </div>
                     </div>
-                    <div className="banner-button banner-countdown-tablet">
-                      <Clock3 className="w-5 h-5" />
-                      <span>{countdown || 'Calcul...'}</span>
-                    </div>
+                    <button
+                      onClick={() => {
+                        // TODO: Implémenter la sélection IA automatique
+                        toast.success('🤖 Sélection IA en cours de développement');
+                      }}
+                      className="banner-button banner-countdown-tablet"
+                      title="Numéros sélectionnés par IA"
+                      style={{
+                        cursor: 'pointer',
+                        border: 'none',
+                        backgroundColor: 'transparent'
+                      }}
+                    >
+                      <div style={{
+                        color: 'white',
+                        fontSize: '20px',
+                        fontWeight: 'bold',
+                        lineHeight: '1',
+                        textAlign: 'center'
+                      }}>
+                        🤖
+                      </div>
+                      <span style={{ fontSize: '12px' }}>IA</span>
+                    </button>
                   </div>
                 </div>
                 <div className="flex items-center gap-6">
@@ -971,9 +1253,9 @@ function NewVersionInterface() {
                   {/* Boutons de contrôle Desktop */}
                   <div className="flex gap-3">
                     <button
-                      onClick={() => setShowLudicrousSelector(true)}
+                      onClick={() => onBackToModeSelection && onBackToModeSelection()}
                       className="banner-hamburger-desktop"
-                      title="Changer de mode"
+                      title="Retour sélection des modes"
                       style={{
                         width: '64px',
                         height: '64px',
@@ -986,12 +1268,12 @@ function NewVersionInterface() {
                     >
                       <div style={{
                         color: 'white',
-                        fontSize: '32px',
+                        fontSize: '28px',
                         fontWeight: 'bold',
                         lineHeight: '1',
                         textAlign: 'center'
                       }}>
-                        ≡
+                        🏠
                       </div>
                     </button>
                     <div className="banner-button banner-draw-desktop">
@@ -1010,10 +1292,30 @@ function NewVersionInterface() {
                         )}
                       </div>
                     </div>
-                    <div className="banner-button banner-countdown-desktop">
-                      <Clock3 className="w-6 h-6" />
-                      <span>{countdown || 'Calcul...'}</span>
-                    </div>
+                    <button
+                      onClick={() => {
+                        // TODO: Implémenter la sélection IA automatique
+                        toast.success('🤖 Sélection IA en cours de développement');
+                      }}
+                      className="banner-button banner-countdown-desktop"
+                      title="Numéros sélectionnés par IA"
+                      style={{
+                        cursor: 'pointer',
+                        border: 'none',
+                        backgroundColor: 'transparent'
+                      }}
+                    >
+                      <div style={{
+                        color: 'white',
+                        fontSize: '24px',
+                        fontWeight: 'bold',
+                        lineHeight: '1',
+                        textAlign: 'center'
+                      }}>
+                        🤖
+                      </div>
+                      <span style={{ fontSize: '14px' }}>IA</span>
+                    </button>
                   </div>
                 </div>
                 <div className="flex items-center gap-8">
@@ -1067,23 +1369,7 @@ function NewVersionInterface() {
 
       </main>
 
-      {/* Modal de sélection de complexité */}
-      {showComplexitySelector && (
-        <ComplexitySelector
-          showAsModal={true}
-          onLevelChange={handleComplexityChange}
-          onClose={() => setShowComplexitySelector(false)}
-          mode="selector"
-        />
-      )}
-
-      {/* Nouvelle modale ludique */}
-      <LudicrousModeSelector
-        isOpen={showLudicrousSelector}
-        onClose={() => setShowLudicrousSelector(false)}
-        onSelectMode={handleComplexityChange}
-        currentMode={complexityLevel}
-      />
+      {/* Note: Les sélecteurs de complexité ont été remplacés par la page d'accueil */}
     </div>
   );
 }
