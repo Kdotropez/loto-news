@@ -5,6 +5,42 @@
 
 /* === STYLES DE BASE === */
 
+/* === STYLES BOULES LOTO === */
+.loto-ball {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(34,197,94,0.9), #16a34a);
+  color: black;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+  margin: 0 2px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.loto-ball.complementary {
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(59,130,246,0.9), #2563eb);
+}
+
+.plus-sign {
+  margin: 0 4px;
+  font-weight: bold;
+  color: white;
+  font-size: 14px;
+}
+
+.loto-numbers {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
 /* === STYLES DE BASE === */
   html {
     font-family: 'Inter', system-ui, sans-serif;
