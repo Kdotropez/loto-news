@@ -706,14 +706,24 @@ function CurrentVersionInterface() {
   const handleImportData = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/import-csv', { method: 'POST' });
+      // Essayer d'abord l'import distant (compatible Vercel)
+      const response = await fetch('/api/import-remote-data', { method: 'POST' });
       const result = await response.json();
       
       if (result.success) {
         toast.success(`✅ ${result.imported} tirages importés avec succès !`);
         await checkDataStatus();
       } else {
-        toast.error('❌ Erreur lors de l\'import des données');
+        // Fallback vers l'import CSV local
+        const csvResponse = await fetch('/api/import-csv', { method: 'POST' });
+        const csvResult = await csvResponse.json();
+        
+        if (csvResult.success) {
+          toast.success(`✅ ${csvResult.imported} tirages importés avec succès !`);
+          await checkDataStatus();
+        } else {
+          toast.error('❌ Erreur lors de l\'import des données');
+        }
       }
     } catch (error) {
       toast.error('❌ Erreur lors de l\'import des données');
@@ -1050,14 +1060,24 @@ function NewVersionInterface({
   const handleImportData = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/import-csv', { method: 'POST' });
+      // Essayer d'abord l'import distant (compatible Vercel)
+      const response = await fetch('/api/import-remote-data', { method: 'POST' });
       const result = await response.json();
       
       if (result.success) {
         toast.success(`✅ ${result.imported} tirages importés avec succès !`);
         await checkDataStatus();
       } else {
-        toast.error('❌ Erreur lors de l\'import des données');
+        // Fallback vers l'import CSV local
+        const csvResponse = await fetch('/api/import-csv', { method: 'POST' });
+        const csvResult = await csvResponse.json();
+        
+        if (csvResult.success) {
+          toast.success(`✅ ${csvResult.imported} tirages importés avec succès !`);
+          await checkDataStatus();
+        } else {
+          toast.error('❌ Erreur lors de l\'import des données');
+        }
       }
     } catch (error) {
       toast.error('❌ Erreur lors de l\'import des données');
