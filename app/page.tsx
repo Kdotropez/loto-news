@@ -171,8 +171,8 @@ function ModeSelectionInterface() {
                 </div>
                 
                 <motion.div
-                  className="mt-4 bg-emerald-600 rounded-full py-2 px-4 text-sm font-bold"
-                  whileHover={{ bg: "#059669" }}
+                  className="mt-4 bg-emerald-600 hover:bg-emerald-700 rounded-full py-2 px-4 text-sm font-bold transition-colors"
+                  whileHover={{ scale: 1.05 }}
                 >
                   🚀 COMMENCER
                 </motion.div>
@@ -219,8 +219,8 @@ function ModeSelectionInterface() {
                 </div>
                 
                 <motion.div
-                  className="mt-4 bg-amber-600 rounded-full py-2 px-4 text-sm font-bold relative"
-                  whileHover={{ bg: "#d97706" }}
+                  className="mt-4 bg-amber-600 hover:bg-amber-700 rounded-full py-2 px-4 text-sm font-bold relative transition-colors"
+                  whileHover={{ scale: 1.05 }}
                 >
                   ⚡ EXPLORER
                   <div className="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs px-2 py-1 rounded-full font-bold">
@@ -270,8 +270,8 @@ function ModeSelectionInterface() {
                 </div>
                 
                 <motion.div
-                  className="mt-4 bg-purple-600 rounded-full py-2 px-4 text-sm font-bold relative"
-                  whileHover={{ bg: "#7c3aed" }}
+                  className="mt-4 bg-purple-600 hover:bg-purple-700 rounded-full py-2 px-4 text-sm font-bold relative transition-colors"
+                  whileHover={{ scale: 1.05 }}
                 >
                   🎯 MAÎTRISER
                   <div className="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs px-2 py-1 rounded-full font-bold">
