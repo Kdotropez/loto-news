@@ -76,7 +76,7 @@ function generateRecentDraws() {
     drawDate.setDate(startDate.getDate() + (i * 3.5)); // Progression depuis 1976
     
     // Générer des numéros réalistes
-    const numbers = [];
+    const numbers: number[] = [];
     while (numbers.length < 5) {
       const num = Math.floor(Math.random() * 49) + 1;
       if (!numbers.includes(num)) {
