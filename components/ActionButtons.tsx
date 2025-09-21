@@ -25,40 +25,40 @@ export default function ActionButtons({
 
   const renderSelectButtons = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-      {/* Sélection IA - Thème Rose Magique */}
+      {/* Sélection Manuelle - Thème Or Étincelant */}
       <motion.div
-        onClick={onSelectAI}
-        className="container-pastel-pink relative overflow-hidden rounded-3xl p-8 md:p-10 cursor-pointer shadow-2xl hover:shadow-3xl transition-all duration-500 border-2 border-pink-200"
-        whileHover={{ scale: 1.03, rotateY: 8, z: 50 }}
+        onClick={onSelectManual}
+        className="container-pastel-amber relative overflow-hidden rounded-3xl p-8 md:p-10 cursor-pointer shadow-2xl hover:shadow-3xl transition-all duration-500 border-2 border-amber-200"
+        whileHover={{ scale: 1.03, rotateY: -8, z: 50 }}
         whileTap={{ scale: 0.97 }}
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
       >
-        {/* Cascade de pétales de rose */}
+        {/* Pluie d'or */}
         <div className="absolute inset-0 overflow-hidden">
-          {[...Array(20)].map((_, i) => (
+          {[...Array(25)].map((_, i) => (
             <motion.div
-              key={`petal-${i}`}
-              className="absolute text-3xl opacity-30"
+              key={`gold-${i}`}
+              className="absolute text-2xl opacity-30"
               style={{
-                left: `${5 + i * 4.5}%`,
-                top: `${-10 + (i % 6) * 15}%`,
+                left: `${2 + i * 3.8}%`,
+                top: `${-15 + (i % 5) * 12}%`,
               }}
               animate={{
-                y: [0, 400],
-                rotate: [0, 720],
-                scale: [1, 0.3],
-                opacity: [0.3, 0.8, 0]
+                y: [0, 450],
+                rotate: [0, 540],
+                scale: [0.8, 1.2, 0.6],
+                opacity: [0.4, 0.9, 0]
               }}
               transition={{
-                duration: 8 + i * 0.4,
+                duration: 6 + i * 0.3,
                 repeat: Infinity,
-                delay: i * 0.3,
+                delay: i * 0.2,
                 ease: "easeInOut"
               }}
             >
-              {i % 4 === 0 ? '🌸' : i % 4 === 1 ? '🌺' : i % 4 === 2 ? '🌹' : '💖'}
+              {i % 5 === 0 ? '🪙' : i % 5 === 1 ? '💰' : i % 5 === 2 ? '💎' : i % 5 === 3 ? '⭐' : '✨'}
             </motion.div>
           ))}
         </div>
@@ -106,49 +106,49 @@ export default function ActionButtons({
             transition={{ duration: 4, repeat: Infinity }}
             className="text-8xl md:text-9xl mb-6 filter drop-shadow-2xl"
           >
-            🎰
+            🎡
           </motion.div>
 
-          {/* Titre enchanté */}
+          {/* Titre doré */}
           <motion.h3 
-            className="text-3xl md:text-4xl font-bold mb-4 text-pink-800 relative"
+            className="text-3xl md:text-4xl font-bold mb-4 text-amber-800 relative"
             animate={{
               textShadow: [
-                "0 0 20px rgba(236, 72, 153, 0.5)",
-                "0 0 40px rgba(236, 72, 153, 0.8)",
-                "0 0 20px rgba(236, 72, 153, 0.5)"
-              ]
-            }}
-            transition={{ duration: 2.5, repeat: Infinity }}
-          >
-            ✨ Sélection Automatique ✨
-          </motion.h3>
-
-          {/* Badge magique */}
-          <motion.div 
-            className="inline-flex items-center gap-3 bg-pink-100/90 backdrop-blur rounded-2xl px-6 py-4 text-pink-800 font-bold shadow-xl"
-            whileHover={{ scale: 1.05, rotate: 2 }}
-            animate={{ 
-              boxShadow: [
-                "0 0 20px rgba(236, 72, 153, 0.3)",
-                "0 0 40px rgba(236, 72, 153, 0.7)",
-                "0 0 20px rgba(236, 72, 153, 0.3)"
+                "0 0 20px rgba(245, 158, 11, 0.6)",
+                "0 0 40px rgba(245, 158, 11, 0.9)",
+                "0 0 20px rgba(245, 158, 11, 0.6)"
               ]
             }}
             transition={{ duration: 2, repeat: Infinity }}
           >
+            ⭐ Sélection Manuelle ⭐
+          </motion.h3>
+
+          {/* Badge magique */}
+          <motion.div 
+            className="inline-flex items-center gap-3 bg-amber-100/90 backdrop-blur rounded-2xl px-6 py-4 text-amber-800 font-bold shadow-xl"
+            whileHover={{ scale: 1.05, rotate: -2 }}
+            animate={{ 
+              boxShadow: [
+                "0 0 20px rgba(245, 158, 11, 0.4)",
+                "0 0 40px rgba(245, 158, 11, 0.8)",
+                "0 0 20px rgba(245, 158, 11, 0.4)"
+              ]
+            }}
+            transition={{ duration: 1.8, repeat: Infinity }}
+          >
             <motion.div
               animate={{ rotate: [0, 360] }}
-              transition={{ duration: 3, repeat: Infinity }}
+              transition={{ duration: 2, repeat: Infinity }}
             >
-              🔮
+              🎯
             </motion.div>
-            <span className="text-lg">IA Prophétique</span>
+            <span className="text-lg">Choix Manuel</span>
             <motion.div
               animate={{ scale: [1, 1.3, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
+              transition={{ duration: 1.2, repeat: Infinity }}
             >
-              🌟
+              ⭐
             </motion.div>
           </motion.div>
         </div>
@@ -180,40 +180,40 @@ export default function ActionButtons({
         </div>
       </motion.div>
 
-      {/* Sélection Manuelle - Thème Or Étincelant */}
+      {/* Sélection IA - Thème Rose Magique */}
       <motion.div
-        onClick={onSelectManual}
-        className="container-pastel-amber relative overflow-hidden rounded-3xl p-8 md:p-10 cursor-pointer shadow-2xl hover:shadow-3xl transition-all duration-500 border-2 border-yellow-200"
-        whileHover={{ scale: 1.03, rotateY: -8, z: 50 }}
+        onClick={onSelectAI}
+        className="container-pastel-pink relative overflow-hidden rounded-3xl p-8 md:p-10 cursor-pointer shadow-2xl hover:shadow-3xl transition-all duration-500 border-2 border-pink-200"
+        whileHover={{ scale: 1.03, rotateY: 8, z: 50 }}
         whileTap={{ scale: 0.97 }}
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        {/* Pluie d'or */}
+        {/* Cascade de pétales de rose */}
         <div className="absolute inset-0 overflow-hidden">
-          {[...Array(25)].map((_, i) => (
+          {[...Array(20)].map((_, i) => (
             <motion.div
-              key={`gold-${i}`}
-              className="absolute text-2xl opacity-40"
+              key={`petal-${i}`}
+              className="absolute text-3xl opacity-30"
               style={{
-                left: `${2 + i * 3.8}%`,
-                top: `${-15 + (i % 5) * 12}%`,
+                left: `${5 + i * 4.5}%`,
+                top: `${-10 + (i % 6) * 15}%`,
               }}
               animate={{
-                y: [0, 450],
-                rotate: [0, 540],
-                scale: [0.8, 1.2, 0.6],
-                opacity: [0.4, 0.9, 0]
+                y: [0, 400],
+                rotate: [0, 720],
+                scale: [1, 0.3],
+                opacity: [0.3, 0.8, 0]
               }}
               transition={{
-                duration: 6 + i * 0.3,
+                duration: 8 + i * 0.4,
                 repeat: Infinity,
-                delay: i * 0.2,
+                delay: i * 0.3,
                 ease: "easeInOut"
               }}
             >
-              {i % 5 === 0 ? '🪙' : i % 5 === 1 ? '💰' : i % 5 === 2 ? '💎' : i % 5 === 3 ? '⭐' : '✨'}
+              {i % 4 === 0 ? '🌸' : i % 4 === 1 ? '🌺' : i % 4 === 2 ? '🌹' : '💖'}
             </motion.div>
           ))}
         </div>
@@ -263,58 +263,52 @@ export default function ActionButtons({
               scale: [1, 1.1, 1],
               y: [0, -10, 0]
             }}
-            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            transition={{ duration: 4, repeat: Infinity }}
             className="text-8xl md:text-9xl mb-6 filter drop-shadow-2xl"
           >
-            🎡
+            🎰
           </motion.div>
 
-          {/* Titre doré */}
+          {/* Titre enchanté */}
           <motion.h3 
-            className="text-3xl md:text-4xl font-bold mb-4 text-amber-800 relative"
+            className="text-3xl md:text-4xl font-bold mb-4 text-pink-800 relative"
             animate={{
               textShadow: [
-                "0 0 20px rgba(245, 158, 11, 0.6)",
-                "0 0 40px rgba(245, 158, 11, 0.9)",
-                "0 0 20px rgba(245, 158, 11, 0.6)"
+                "0 0 20px rgba(236, 72, 153, 0.5)",
+                "0 0 40px rgba(236, 72, 153, 0.8)",
+                "0 0 20px rgba(236, 72, 153, 0.5)"
+              ]
+            }}
+            transition={{ duration: 2.5, repeat: Infinity }}
+          >
+            ✨ Sélection Automatique ✨
+          </motion.h3>
+
+          {/* Badge magique */}
+          <motion.div 
+            className="inline-flex items-center gap-3 bg-pink-100/90 backdrop-blur rounded-2xl px-6 py-4 text-pink-800 font-bold shadow-xl"
+            whileHover={{ scale: 1.05, rotate: -2 }}
+            animate={{ 
+              boxShadow: [
+                "0 0 20px rgba(236, 72, 153, 0.3)",
+                "0 0 40px rgba(236, 72, 153, 0.7)",
+                "0 0 20px rgba(236, 72, 153, 0.3)"
               ]
             }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            ⭐ Sélection Manuelle ⭐
-          </motion.h3>
-
-          {/* Badge interactif doré */}
-          <motion.div 
-            className="inline-flex items-center gap-3 bg-amber-100/90 backdrop-blur rounded-2xl px-6 py-4 text-amber-800 font-bold shadow-xl"
-            whileHover={{ scale: 1.05, rotate: -2 }}
-            animate={{ 
-              boxShadow: [
-                "0 0 20px rgba(245, 158, 11, 0.4)",
-                "0 0 40px rgba(245, 158, 11, 0.8)",
-                "0 0 20px rgba(245, 158, 11, 0.4)"
-              ]
-            }}
-            transition={{ duration: 1.8, repeat: Infinity }}
-          >
             <motion.div
-              animate={{ 
-                rotate: [0, -360],
-                scale: [1, 1.2, 1]
-              }}
-              transition={{ duration: 4, repeat: Infinity }}
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 3, repeat: Infinity }}
             >
-              🎯
+              🔮
             </motion.div>
-            <span className="text-lg">Maître du Destin</span>
+            <span className="text-lg">IA Prophétique</span>
             <motion.div
-              animate={{ 
-                scale: [1, 1.4, 1],
-                rotate: [0, 180, 360]
-              }}
-              transition={{ duration: 2.5, repeat: Infinity }}
+              animate={{ scale: [1, 1.3, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
             >
-              💫
+              ✨
             </motion.div>
           </motion.div>
         </div>

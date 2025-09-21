@@ -15,7 +15,6 @@ import {
   X
 } from 'lucide-react';
 import SimpleUnifiedAnalysis from './SimpleUnifiedAnalysis';
-import DreamyProgressBar from './DreamyProgressBar';
 import ActionButtons from './ActionButtons';
 import { savedGridsManager } from '../lib/saved-grids-manager';
 import { ComplexityLevel } from '../lib/complexity-manager';
@@ -202,7 +201,7 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
         });
       }
       
-       setCurrentStep('save');
+      setCurrentStep('save');
       
     } catch (error) {
       console.error('Erreur génération:', error);
@@ -463,14 +462,59 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
         </div>
       </motion.div>
 
-      {/* Barre de progression - seulement après choix */}
+      {/* Boutons de navigation - seulement après choix */}
       {selectionChoiceMade && (
-        <DreamyProgressBar 
-          currentStep={currentStep}
-          onReset={resetToStart}
-          isManualSelection={showManualSelection}
-          onSwitchSelection={handleSwitchSelection}
-        />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col md:flex-row gap-4 justify-center max-w-2xl mx-auto"
+        >
+          {/* Bouton 1: Retour au choix ou switch mode */}
+          <motion.button
+            className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-4 rounded-xl font-bold shadow-lg border-2 border-amber-300"
+            onClick={() => {
+              // Alterner entre les modes de sélection
+              if (showManualSelection) {
+                // Si on est en manuel, retourner au choix
+                setSelectionChoiceMade(false);
+                setShowManualSelection(false);
+              } else {
+                // Si on est en IA, passer au manuel
+                setShowManualSelection(true);
+              }
+            }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <div className="text-center">
+              <div className="text-2xl mb-1">{showManualSelection ? '🔙' : '🎯'}</div>
+              <div className="font-bold">
+                {showManualSelection ? 'Retour Choix' : 'Sélection Manuelle'}
+              </div>
+              <div className="text-xs opacity-80">
+                {showManualSelection ? 'Écran précédent' : 'Bingo interactif'}
+              </div>
+            </div>
+          </motion.button>
+
+          {/* Bouton 2: Choix des numéros par IA */}
+          <motion.button
+            className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-4 rounded-xl font-bold shadow-lg border-2 border-purple-300"
+            onClick={() => {
+              // Passer à la sélection IA
+              setShowManualSelection(false);
+              setSelectionChoiceMade(true);
+            }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <div className="text-center">
+              <div className="text-2xl mb-1">🤖</div>
+              <div className="font-bold">Numéros par IA</div>
+              <div className="text-xs opacity-80">Analyse intelligente automatique</div>
+            </div>
+          </motion.button>
+      </motion.div>
       )}
 
       {/* Boutons d'action - seulement si pas encore de choix */}
@@ -545,8 +589,8 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
                 {i % 5 === 0 ? '🪙' : i % 5 === 1 ? '💰' : i % 5 === 2 ? '💎' : i % 5 === 3 ? '🎰' : '⭐'}
               </motion.div>
             ))}
-          </div>
-
+        </div>
+        
           {/* Header de Casino Magique */}
           <div className="relative z-10 text-center mb-8">
             {/* Enseigne lumineuse */}
@@ -592,7 +636,7 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
               <div className="text-sm font-bold">💰 JACKPOT ANALYSIS 💰</div>
               <div className="text-lg font-black">49 ANS DE DONNÉES</div>
             </motion.div>
-          </div>
+            </div>
 
           {/* Machine à sous centrale */}
           <div className="relative z-10 mb-8">
@@ -640,8 +684,8 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
                     ))}
                   </div>
                 </div>
-              </div>
-
+          </div>
+          
               {/* Levier de la machine */}
               <div className="flex justify-end">
                 <motion.div
@@ -664,7 +708,7 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
               analysisPeriod={globalAnalysisPeriod}
               onNumberSelection={handleNumberSelection}
             />
-          </div>
+            </div>
 
           {/* Effets de particules sur les bords */}
           <div className="absolute inset-0 pointer-events-none">
@@ -856,12 +900,12 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
                     <div>
                       <div className={`font-bold ${selectedMainNumbers.length >= 6 ? 'text-blue-800' : 'text-gray-600'}`}>
                         Grilles Multiples
-                      </div>
+            </div>
                       <div className={`text-sm ${selectedMainNumbers.length >= 6 ? 'text-blue-600' : 'text-gray-500'}`}>
                         {selectedMainNumbers.length >= 6 
                           ? `${selectedMainNumbers.length} n° → 31 formats possibles` 
                           : 'Minimum 6 numéros requis'}
-                      </div>
+          </div>
                     </div>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -876,8 +920,8 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
                       selectedMainNumbers.length >= 6 ? 'bg-gray-200' : 'bg-gray-300 cursor-not-allowed'
                     }`}></div>
                   </label>
-                </div>
-              </div>
+        </div>
+      </div>
 
               {/* Second tirage */}
               <div className="bg-white/20 backdrop-blur rounded-xl p-4">
@@ -945,7 +989,7 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
            {/* Particules magiques flottantes */}
            <div className="absolute inset-0 overflow-hidden pointer-events-none">
              {[...Array(25)].map((_, i) => (
-               <motion.div
+        <motion.div
                  key={i}
                  className="absolute w-2 h-2 bg-white/40 rounded-full"
                  style={{
@@ -985,12 +1029,12 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
                
                <h2 className="text-2xl md:text-3xl font-bold text-green-800 mb-2">
                  ✨ VOS GRILLES GÉNÉRÉES ✨
-               </h2>
+            </h2>
                <p className="text-green-600 text-sm md:text-base">
                  🎪 Prêtes pour le tirage ! 🎪
-               </p>
-             </div>
-
+            </p>
+          </div>
+          
              {/* Résumé du prix */}
              <div className="bg-green-100 rounded-xl p-4 mb-6 text-center">
                <div className="text-green-800 font-bold text-lg">
@@ -1835,7 +1879,7 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
                   🌱
                 </motion.div>
                 <h3 className="text-2xl font-bold text-emerald-800">Mode Débutant</h3>
-              </div>
+        </div>
               <button
                 onClick={() => setShowModeDetails(false)}
                 className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
@@ -1849,8 +1893,8 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
               <div className="text-center">
                 <p className="text-gray-700 text-lg">
                   ✨ Interface complète et magique pour maîtriser le loto ✨
-                </p>
-              </div>
+        </p>
+      </div>
               
               {/* Fonctionnalités */}
               <div className="bg-emerald-50 rounded-xl p-5 border-2 border-emerald-200">
