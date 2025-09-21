@@ -129,17 +129,25 @@ function ModeSelectionInterface() {
                 
                 <h3 className="text-2xl font-bold mb-3">Mode Débutant</h3>
                 <p className="text-emerald-100 mb-4 text-sm">
-                  Interface simple et guidée pour découvrir le loto
+                  Interface complète et guidée pour maîtriser le loto
                 </p>
                 
-                <div className="bg-white/20 rounded-lg p-3 text-xs">
-                  <div className="flex items-center justify-center gap-2 mb-2">
+                <div className="bg-white/20 rounded-lg p-3 text-xs space-y-1">
+                  <div className="flex items-center justify-center gap-2">
                     <CheckCircle className="w-4 h-4" />
-                    <span>Sélection IA automatique</span>
+                    <span>Sélection IA ou manuelle</span>
                   </div>
                   <div className="flex items-center justify-center gap-2">
                     <CheckCircle className="w-4 h-4" />
-                    <span>Génération simple</span>
+                    <span>Grilles simples et multiples</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Bingo magique interactif</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Sauvegarde intelligente</span>
                   </div>
                 </div>
                 
@@ -257,9 +265,31 @@ function ModeSelectionInterface() {
           transition={{ delay: 1 }}
           className="text-center mt-16 text-teal-600"
         >
-          <p className="text-sm">
-            ✨ Chaque mode vous mènera à l'étape de sélection des numéros ✨
-          </p>
+          <div className="bg-white/80 rounded-xl p-6 max-w-4xl mx-auto">
+            <h4 className="font-bold text-teal-800 mb-4 text-lg">🎯 Processus en 4 étapes :</h4>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+              <div className="text-center">
+                <div className="text-2xl mb-2">1️⃣</div>
+                <div className="font-semibold text-teal-800">Sélectionner</div>
+                <div className="text-teal-600">IA automatique ou Bingo manuel</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl mb-2">2️⃣</div>
+                <div className="font-semibold text-teal-800">Configurer</div>
+                <div className="text-teal-600">Nombre de grilles et options</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl mb-2">3️⃣</div>
+                <div className="font-semibold text-teal-800">Générer</div>
+                <div className="text-teal-600">Grilles simples ou multiples</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl mb-2">4️⃣</div>
+                <div className="font-semibold text-teal-800">Sauvegarder</div>
+                <div className="text-teal-600">Contrôle après tirage officiel</div>
+              </div>
+            </div>
+          </div>
         </motion.div>
       </div>
     </div>
