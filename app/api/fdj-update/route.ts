@@ -7,6 +7,17 @@ export async function POST(request: NextRequest) {
     const { month, year, updateLatest } = await request.json();
     
     console.log('🚀 Début mise à jour FDJ...');
+    
+    // Vérification de l'environnement Vercel
+    if (process.env.VERCEL) {
+      console.log('⚠️ Environnement Vercel détecté - FDJ Scraper désactivé');
+      return NextResponse.json({
+        success: false,
+        message: 'FDJ Scraper désactivé en production Vercel',
+        error: 'Production environment limitation'
+      }, { status: 503 });
+    }
+    
     const scraper = new FDJScraper();
     
     let results;
