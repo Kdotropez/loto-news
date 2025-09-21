@@ -4,6 +4,14 @@ import { dataStorage } from '@/lib/data-storage';
 
 export async function POST(request: NextRequest) {
   try {
+    // Temporairement désactivé pour le déploiement Vercel
+    return NextResponse.json({
+      success: false,
+      message: 'API FDJ Update temporairement désactivée pour le déploiement',
+      error: 'Feature disabled'
+    }, { status: 503 });
+    
+    /* 
     const { month, year, updateLatest } = await request.json();
     
     console.log('🚀 Début mise à jour FDJ...');
@@ -97,6 +105,7 @@ export async function POST(request: NextRequest) {
       updated: savedCount,
       results: results.length
     });
+    */
     
   } catch (error) {
     console.error('❌ Erreur API FDJ Update:', error);
