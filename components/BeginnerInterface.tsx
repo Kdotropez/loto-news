@@ -1818,44 +1818,128 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
 
       {/* Modale Détails du Mode Débutant */}
       {showModeDetails && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-800">🌱 Mode Débutant</h3>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: 50 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="bg-gradient-to-br from-white to-emerald-50 rounded-2xl max-w-lg w-full p-8 shadow-2xl border-4 border-emerald-200"
+          >
+            {/* Header magique */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <motion.div
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="text-3xl"
+                >
+                  🌱
+                </motion.div>
+                <h3 className="text-2xl font-bold text-emerald-800">Mode Débutant</h3>
+              </div>
               <button
                 onClick={() => setShowModeDetails(false)}
-                className="p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-6 h-6" />
               </button>
             </div>
             
-            <div className="space-y-4">
-              <p className="text-gray-600">
-                Interface simple et guidée pour débuter avec l'analyse du loto.
-              </p>
-              
-              <div className="bg-emerald-50 rounded-lg p-4">
-                <h4 className="font-semibold text-emerald-800 mb-2">Fonctionnalités disponibles :</h4>
-                <ul className="space-y-1 text-sm text-emerald-700">
-                  <li>• Analyse intelligente automatique</li>
-                  <li>• Génération de grilles simples</li>
-                  <li>• Interface guidée étape par étape</li>
-                  <li>• Sauvegarde basique des grilles</li>
-                  <li>• Option Second Tirage</li>
-                </ul>
+            <div className="space-y-6">
+              {/* Description */}
+              <div className="text-center">
+                <p className="text-gray-700 text-lg">
+                  ✨ Interface complète et magique pour maîtriser le loto ✨
+                </p>
               </div>
               
-              <div className="bg-orange-50 rounded-lg p-4">
-                <h4 className="font-semibold text-orange-800 mb-2">Processus en 3 étapes :</h4>
-                <div className="space-y-2 text-sm text-orange-700">
-                  <div><strong>1. Sélectionner</strong> : L'IA choisit automatiquement les meilleurs numéros</div>
-                  <div><strong>2. Générer</strong> : Création de 5 grilles optimisées</div>
-                  <div><strong>3. Sauvegarder</strong> : Sauvegarde pour contrôle après tirage</div>
+              {/* Fonctionnalités */}
+              <div className="bg-emerald-50 rounded-xl p-5 border-2 border-emerald-200">
+                <h4 className="font-bold text-emerald-800 mb-4 text-lg flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5" />
+                  Fonctionnalités disponibles :
+                </h4>
+                <div className="grid grid-cols-1 gap-2 text-sm text-emerald-700">
+                  <div className="flex items-center gap-2">
+                    <span className="text-emerald-500">🤖</span>
+                    <span><strong>Sélection IA ou manuelle</strong> - Analyse intelligente ou Bingo interactif</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-emerald-500">🎰</span>
+                    <span><strong>Grilles simples et multiples</strong> - Tous les formats de jeu</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-emerald-500">🎪</span>
+                    <span><strong>Bingo magique interactif</strong> - Sélection ludique des numéros</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-emerald-500">💾</span>
+                    <span><strong>Sauvegarde intelligente</strong> - LocalStorage persistant</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-emerald-500">🎲</span>
+                    <span><strong>Second tirage</strong> - Option +0,80€ par grille</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-emerald-500">🎯</span>
+                    <span><strong>Sélection flexible</strong> - 5+ numéros + complémentaires multiples</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Processus */}
+              <div className="bg-orange-50 rounded-xl p-5 border-2 border-orange-200">
+                <h4 className="font-bold text-orange-800 mb-4 text-lg flex items-center gap-2">
+                  <ArrowRight className="w-5 h-5" />
+                  Processus en 4 étapes :
+                </h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-start gap-3">
+                    <span className="bg-orange-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+                    <div>
+                      <div className="font-semibold text-orange-800">Sélectionner</div>
+                      <div className="text-orange-600">IA automatique (Casino magique) ou Bingo manuel interactif</div>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="bg-orange-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+                    <div>
+                      <div className="font-semibold text-orange-800">Configurer</div>
+                      <div className="text-orange-600">Nombre de grilles (libre), type simple/multiple, second tirage</div>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="bg-orange-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
+                    <div>
+                      <div className="font-semibold text-orange-800">Générer</div>
+                      <div className="text-orange-600">Création des grilles au format loto (boules colorées)</div>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="bg-orange-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">4</span>
+                    <div>
+                      <div className="font-semibold text-orange-800">Sauvegarder</div>
+                      <div className="text-orange-600">Sauvegarde locale pour vérification après tirage officiel</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Avantages */}
+              <div className="bg-blue-50 rounded-xl p-5 border-2 border-blue-200">
+                <h4 className="font-bold text-blue-800 mb-3 text-lg flex items-center gap-2">
+                  <Star className="w-5 h-5" />
+                  Pourquoi choisir le Mode Débutant ?
+                </h4>
+                <div className="text-sm text-blue-700 space-y-2">
+                  <div>🎯 <strong>Interface intuitive</strong> - Design "Loto de Rêve" magique</div>
+                  <div>🎪 <strong>Expérience ludique</strong> - Bingo interactif avec boules 3D</div>
+                  <div>🤖 <strong>IA intégrée</strong> - Analyse de 49 ans de données</div>
+                  <div>💰 <strong>Gestion des coûts</strong> - Calcul automatique des prix</div>
+                  <div>📱 <strong>Mobile-first</strong> - Optimisé pour tous les appareils</div>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>

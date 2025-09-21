@@ -34,6 +34,8 @@ export default function Home() {
 // Interface de sélection des modes
 function ModeSelectionInterface() {
   const [selectedMode, setSelectedMode] = useState<ComplexityLevel | null>(null);
+  const [showCodePrompt, setShowCodePrompt] = useState<ComplexityLevel | null>(null);
+  const [enteredCode, setEnteredCode] = useState('');
 
   // Si un mode est sélectionné, afficher l'interface correspondante
   if (selectedMode) {
@@ -42,6 +44,31 @@ function ModeSelectionInterface() {
       onBackToModeSelection={() => setSelectedMode(null)}
     />;
   }
+
+  // Fonction pour gérer la sélection des modes
+  const handleModeSelection = (mode: ComplexityLevel) => {
+    if (mode === 'beginner') {
+      // Mode débutant : accès libre
+      setSelectedMode(mode);
+    } else {
+      // Modes payants : demander le code
+      setShowCodePrompt(mode);
+      setEnteredCode('');
+    }
+  };
+
+  // Vérifier le code d'accès
+  const verifyCode = () => {
+    if (enteredCode === '2025') {
+      setSelectedMode(showCodePrompt);
+      setShowCodePrompt(null);
+      setEnteredCode('');
+    } else {
+      // Code incorrect - réinitialiser
+      setEnteredCode('');
+      // Pas de message d'erreur pour garder le code secret
+    }
+  };
 
   // Page de sélection des modes
   return (
@@ -110,7 +137,7 @@ function ModeSelectionInterface() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="relative group cursor-pointer"
-            onClick={() => setSelectedMode('beginner')}
+            onClick={() => handleModeSelection('beginner')}
             whileHover={{ scale: 1.05, y: -10 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -129,25 +156,17 @@ function ModeSelectionInterface() {
                 
                 <h3 className="text-2xl font-bold mb-3">Mode Débutant</h3>
                 <p className="text-emerald-100 mb-4 text-sm">
-                  Interface complète et guidée pour maîtriser le loto
+                  Interface simple et guidée pour découvrir le loto
                 </p>
                 
-                <div className="bg-white/20 rounded-lg p-3 text-xs space-y-1">
-                  <div className="flex items-center justify-center gap-2">
+                <div className="bg-white/20 rounded-lg p-3 text-xs">
+                  <div className="flex items-center justify-center gap-2 mb-2">
                     <CheckCircle className="w-4 h-4" />
-                    <span>Sélection IA ou manuelle</span>
+                    <span>Sélection IA automatique</span>
                   </div>
                   <div className="flex items-center justify-center gap-2">
                     <CheckCircle className="w-4 h-4" />
-                    <span>Grilles simples et multiples</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Bingo magique interactif</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Sauvegarde intelligente</span>
+                    <span>Génération simple</span>
                   </div>
                 </div>
                 
@@ -167,7 +186,7 @@ function ModeSelectionInterface() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
             className="relative group cursor-pointer"
-            onClick={() => setSelectedMode('intermediate')}
+            onClick={() => handleModeSelection('intermediate')}
             whileHover={{ scale: 1.05, y: -10 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -200,10 +219,13 @@ function ModeSelectionInterface() {
                 </div>
                 
                 <motion.div
-                  className="mt-4 bg-amber-600 rounded-full py-2 px-4 text-sm font-bold"
+                  className="mt-4 bg-amber-600 rounded-full py-2 px-4 text-sm font-bold relative"
                   whileHover={{ bg: "#d97706" }}
                 >
                   ⚡ EXPLORER
+                  <div className="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs px-2 py-1 rounded-full font-bold">
+                    💎
+                  </div>
                 </motion.div>
               </div>
             </div>
@@ -215,7 +237,7 @@ function ModeSelectionInterface() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
             className="relative group cursor-pointer"
-            onClick={() => setSelectedMode('expert')}
+            onClick={() => handleModeSelection('expert')}
             whileHover={{ scale: 1.05, y: -10 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -248,10 +270,13 @@ function ModeSelectionInterface() {
                 </div>
                 
                 <motion.div
-                  className="mt-4 bg-purple-600 rounded-full py-2 px-4 text-sm font-bold"
+                  className="mt-4 bg-purple-600 rounded-full py-2 px-4 text-sm font-bold relative"
                   whileHover={{ bg: "#7c3aed" }}
                 >
                   🎯 MAÎTRISER
+                  <div className="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs px-2 py-1 rounded-full font-bold">
+                    💎
+                  </div>
                 </motion.div>
               </div>
             </div>
@@ -292,6 +317,62 @@ function ModeSelectionInterface() {
           </div>
         </motion.div>
       </div>
+
+      {/* Modale de saisie du code d'accès */}
+      {showCodePrompt && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl"
+          >
+            <div className="text-center">
+              <div className="text-4xl mb-4">
+                {showCodePrompt === 'intermediate' ? '⚡' : '🎯'}
+              </div>
+              
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                {showCodePrompt === 'intermediate' ? 'Mode Intermédiaire' : 'Mode Expert'}
+              </h3>
+              
+              <p className="text-gray-600 mb-6">
+                Mode premium - Code d'accès requis
+              </p>
+
+              <div className="mb-6">
+                <input
+                  type="text"
+                  value={enteredCode}
+                  onChange={(e) => setEnteredCode(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && verifyCode()}
+                  placeholder="Entrez le code"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-center text-lg font-mono tracking-widest focus:border-blue-500 focus:outline-none"
+                  maxLength={4}
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowCodePrompt(null);
+                    setEnteredCode('');
+                  }}
+                  className="flex-1 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                  Annuler
+                </button>
+                
+                <button
+                  onClick={verifyCode}
+                  className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  Valider
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
@@ -562,9 +643,7 @@ function CurrentVersionInterface() {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     
-    // Vérifier le niveau de complexité
-    const savedLevel = complexityManager.getCurrentLevel();
-    setComplexityLevel(savedLevel);
+    // Note: Le niveau de complexité est maintenant géré par la sélection de mode
     
     // Charger les données
     checkDataStatus();
@@ -842,8 +921,7 @@ function NewVersionInterface({
     window.addEventListener('resize', updateDeviceType);
     
     // Initialiser votre app Loto
-    const savedLevel = complexityManager.getCurrentLevel();
-    setComplexityLevel(savedLevel);
+    // Note: Le niveau de complexité est maintenant géré par la sélection de mode
     checkDataStatus();
     fetchLastDraw();
     
