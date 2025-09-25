@@ -33,6 +33,41 @@ export default function SavedGridsManager() {
     netResult: 0,
     winRate: 0
   });
+  const [expandedDetails, setExpandedDetails] = useState<Set<string>>(new Set());
+
+  const exportWinnersCSV = (session: SavedGameSession) => {
+    if (!session?.results?.gridResults) {
+      alert('Aucun résultat disponible pour cette session. Contrôlez d\'abord la session.');
+      return;
+    }
+    const winners = session.results.gridResults.filter((g: any) => (g?.rank ?? 0) > 0);
+    if (winners.length === 0) {
+      alert('Aucune grille gagnante à exporter.');
+      return;
+    }
+    const rows: string[][] = [["#","numbers","chance","matches","rank","estimated_gain_eur"]];
+    winners.forEach((g: any, idx: number) => {
+      const nums = extractNumbers(g);
+      const chance = extractChance(g);
+      const gain = computeEstimatedGain(g);
+      const mMain = g?.matchesMain ?? g?.matches ?? 0;
+      const mChance = g?.matchesChance ?? (typeof g?.matchChance === 'boolean' ? (g.matchChance ? 1 : 0) : 0);
+      rows.push([
+        String(idx + 1),
+        nums.join('-'),
+        chance ? String(chance) : '',
+        mMain + (mChance ? ' + chance' : ''),
+        String(g?.rank ?? ''),
+        gain.toFixed(2)
+      ]);
+    });
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `winners_${session.id}.csv`; a.click();
+    URL.revokeObjectURL(url);
+  };
 
   // Charger les sessions au montage
   useEffect(() => {
@@ -100,6 +135,29 @@ export default function SavedGridsManager() {
       savedGridsManager.deleteSession(sessionId);
       loadSessions();
     }
+  };
+
+  // Helpers d'affichage
+  const extractNumbers = (gr: any): number[] => {
+    if (Array.isArray(gr?.numbers)) return gr.numbers;
+    if (Array.isArray(gr?.grid?.numbers)) return gr.grid.numbers;
+    if (Array.isArray(gr?.combination)) return gr.combination;
+    if (Array.isArray(gr?.combo)) return gr.combo;
+    return [];
+  };
+  const extractChance = (gr: any): number | null => {
+    if (typeof gr?.complementary === 'number') return gr.complementary;
+    if (typeof gr?.grid?.complementary === 'number') return gr.grid.complementary;
+    if (typeof gr?.chance === 'number') return gr.chance;
+    return null;
+  };
+  const computeEstimatedGain = (gr: any): number => {
+    if (typeof gr?.gain === 'number') return gr.gain;
+    if (typeof gr?.estimatedGain === 'number') return gr.estimatedGain;
+    const r = gr?.rank ?? 0;
+    // Barème approximatif par rang (indicatif)
+    const map: Record<number, number> = { 6: 2000000, 5: 100000, 4: 1000, 3: 50, 2: 5, 1: 0 };
+    return map[r] ?? 0;
   };
 
   const formatDate = (dateString: string): string => {
@@ -242,25 +300,87 @@ export default function SavedGridsManager() {
                       <div className="mt-3 p-3 bg-white rounded border">
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-600">
-                            Résultat: {session.results.gridResults.filter(g => g.rank > 0).length} grilles gagnantes
+                            Résultat: {session.results.gridResults.filter((g: any) => (g?.rank ?? 0) > 0).length} grilles gagnantes
                           </span>
-                          <span className={`font-bold ${session.results.netResult >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {session.results.netResult >= 0 ? '+' : ''}{session.results.netResult.toFixed(2)}€
-                          </span>
+                          <div className="flex items-center gap-3">
+                            <button
+                              className="text-blue-600 underline"
+                              onClick={() => {
+                                setExpandedDetails(prev => {
+                                  const next = new Set(prev);
+                                  if (next.has(session.id)) next.delete(session.id); else next.add(session.id);
+                                  return next;
+                                });
+                              }}
+                            >
+                              {expandedDetails.has(session.id) ? 'Masquer détails' : 'Voir détails'}
+                            </button>
+                            <span className={`font-bold ${session.results.netResult >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              {session.results.netResult >= 0 ? '+' : ''}{session.results.netResult.toFixed(2)}€
+                            </span>
+                          </div>
                         </div>
+
+                        {expandedDetails.has(session.id) && (
+                          <div className="mt-3 overflow-auto">
+                            <table className="w-full text-sm">
+                              <thead className="bg-gray-100">
+                                <tr>
+                                  <th className="text-left px-2 py-1">#</th>
+                                  <th className="text-left px-2 py-1">Grille</th>
+                                  <th className="text-left px-2 py-1">Matches</th>
+                                  <th className="text-left px-2 py-1">Rang</th>
+                                  <th className="text-left px-2 py-1">Gain estimé</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {session.results.gridResults
+                                  .filter((g: any) => (g?.rank ?? 0) > 0)
+                                  .map((g: any, idx: number) => {
+                                    const gridDef = session.grids.find(x => x.id === g.gridId);
+                                    const nums = gridDef ? gridDef.numbers : [];
+                                    const chance = gridDef && typeof gridDef.complementary === 'number' ? gridDef.complementary : null;
+                                    const gain = computeEstimatedGain(g);
+                                    const mMain = Array.isArray(g?.matchedNumbers) ? g.matchedNumbers.length : (g?.matchesMain ?? g?.matches ?? 0);
+                                    const hasChance = typeof g?.matchedComplementary === 'boolean' ? g.matchedComplementary : (g?.matchesChance ? true : false);
+                                    const rank = g?.rank ?? '-';
+                                    return (
+                                      <tr key={idx} className="border-t">
+                                        <td className="px-2 py-1">{idx + 1}</td>
+                                        <td className="px-2 py-1">
+                                          <div className="flex flex-wrap items-center gap-1">
+                                            {nums.map((n: number) => (
+                                              <span key={n} className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-white border text-gray-800 font-semibold">{n}</span>
+                                            ))}
+                                            {chance ? (
+                                              <>
+                                                <span className="text-gray-400 mx-1">+</span>
+                                                <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-white border text-blue-700 font-semibold">{chance}</span>
+                                              </>
+                                            ) : null}
+                                          </div>
+                                        </td>
+                                        <td className="px-2 py-1">{mMain}{hasChance ? ' + chance' : ''}</td>
+                                        <td className="px-2 py-1">{rank}</td>
+                                        <td className="px-2 py-1 font-semibold text-green-700">{gain.toFixed(2)}€</td>
+                                      </tr>
+                                    );
+                                  })}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
 
                   <div className="flex gap-2 ml-4">
-                    {session.status === 'pending' && (
-                      <button
-                        onClick={() => handleCheckSession(session)}
-                        className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-semibold transition-colors"
-                      >
-                        🔍 Contrôler
-                      </button>
-                    )}
+                    <button
+                      onClick={() => handleCheckSession(session)}
+                      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-semibold transition-colors"
+                    >
+                      🔍 Re‑contrôler
+                    </button>
                     <button
                       onClick={() => deleteSession(session.id)}
                       className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-semibold transition-colors"
@@ -268,7 +388,10 @@ export default function SavedGridsManager() {
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
-                </div>
+                            <div className="mt-3 text-right">
+                              {/* Bouton d'export retiré à la demande de l'utilisateur */}
+                            </div>
+                          </div>
               </div>
             ))}
           </div>

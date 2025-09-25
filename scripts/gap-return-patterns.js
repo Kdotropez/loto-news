@@ -10,10 +10,32 @@ class GapReturnAnalyzer {
 
   loadData() {
     try {
+      // Priorité au fichier JSON complet
+      const dataPathComplet = path.join(__dirname, '../data/Tirages_Loto_1976_2025_COMPLET.json');
       const dataPath = path.join(__dirname, '../data/tirages.json');
-      if (fs.existsSync(dataPath)) {
+      
+      if (fs.existsSync(dataPathComplet)) {
+        const rawData = fs.readFileSync(dataPathComplet, 'utf8');
+        const jsonData = JSON.parse(rawData);
+        
+        // Convertir le format JSON complet vers le format standard
+        this.tirages = jsonData.map((t) => ({
+          id: t.annee_numero_de_tirage,
+          date: new Date(t.date_de_tirage).toISOString().split('T')[0],
+          numero1: t.boule_1,
+          numero2: t.boule_2,
+          numero3: t.boule_3,
+          numero4: t.boule_4,
+          numero5: t.boule_5,
+          complementaire: t.numero_chance || (t.boule_complementaire % 10 + 1),
+        }));
+        
+        console.log(`📊 ${this.tirages.length} tirages chargés depuis le fichier JSON complet`);
+        return true;
+      } else if (fs.existsSync(dataPath)) {
         const rawData = fs.readFileSync(dataPath, 'utf8');
         this.tirages = JSON.parse(rawData);
+        console.log(`📊 ${this.tirages.length} tirages chargés depuis l'ancien fichier`);
         return true;
       }
       return false;

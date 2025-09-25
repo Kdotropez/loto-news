@@ -34,6 +34,17 @@ export async function GET(request: NextRequest) {
           message: isConnected ? 'API accessible' : 'API inaccessible'
         });
         
+        case 'sync':
+          // Lancer la synchronisation via GET pour faciliter l'appel sans corps JSON
+          const result = await openDataSoftSync.syncWithLocalDatabase();
+          return NextResponse.json({
+            success: result.success,
+            result,
+            message: result.success
+              ? `Synchronisation réussie: ${result.newTirages} nouveaux tirages`
+              : `Échec de synchronisation: ${result.error}`
+          }, { status: result.success ? 200 : 500 });
+
       case 'preview':
         // Aperçu des derniers tirages sans sauvegarde
         const limit = parseInt(searchParams.get('limit') || '10');
@@ -65,8 +76,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { action, sinceDate } = body;
+    let action = 'sync';
+    let sinceDate: string | undefined = undefined;
+    try {
+      const body = await request.json();
+      action = body?.action || 'sync';
+      sinceDate = body?.sinceDate;
+    } catch (_) {
+      // Aucun corps JSON valide, fallback vers 'sync'
+    }
     
     switch (action) {
       case 'sync':
@@ -79,7 +97,7 @@ export async function POST(request: NextRequest) {
           message: result.success 
             ? `Synchronisation réussie: ${result.newTirages} nouveaux tirages`
             : `Échec de synchronisation: ${result.error}`
-        });
+        }, { status: result.success ? 200 : 500 });
         
       case 'fetch-since':
         // Récupérer depuis une date spécifique

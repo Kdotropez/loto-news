@@ -3,75 +3,109 @@ import { DrawProximityAnalyzer } from '@/lib/draw-proximity-analyzer';
 
 export const dynamic = 'force-dynamic';
 
-// Fonction pour générer des combinaisons de test
-function generateTestCombinations(strategies: any[]) {
-  const combinations = [];
-  
-  // Génère quelques combinaisons représentatives
-  const testCombinations = [
-    {
-      id: 'hot-cold-1',
-      name: 'Hot-Cold Hybride',
-      strategies: ['hot-cold-hybrid'],
-      combination: { mainNumbers: [7, 14, 21, 28, 35], complementaryNumber: 8 }
-    },
-    {
-      id: 'correlations-1',
-      name: 'Corrélations Fortes',
-      strategies: ['correlations'],
-      combination: { mainNumbers: [3, 12, 18, 27, 33], complementaryNumber: 5 }
-    },
-    {
-      id: 'mathematical-1',
-      name: 'Patterns Mathématiques',
-      strategies: ['mathematical-patterns'],
-      combination: { mainNumbers: [1, 4, 9, 16, 25], complementaryNumber: 2 }
-    },
-    {
-      id: 'neural-1',
-      name: 'Réseau de Neurones',
-      strategies: ['neural-network'],
-      combination: { mainNumbers: [5, 10, 15, 20, 25], complementaryNumber: 7 }
-    },
-    {
-      id: 'fibonacci-1',
-      name: 'Suite de Fibonacci',
-      strategies: ['fibonacci'],
-      combination: { mainNumbers: [1, 1, 2, 3, 5], complementaryNumber: 1 }
-    },
-    {
-      id: 'prime-1',
-      name: 'Nombres Premiers',
-      strategies: ['prime-numbers'],
-      combination: { mainNumbers: [2, 3, 5, 7, 11], complementaryNumber: 3 }
-    },
-    {
-      id: 'hybrid-1',
-      name: 'Hot-Cold + Corrélations',
-      strategies: ['hot-cold-hybrid', 'correlations'],
-      combination: { mainNumbers: [7, 12, 21, 27, 35], complementaryNumber: 6 }
-    },
-    {
-      id: 'hybrid-2',
-      name: 'Mathématiques + Neural',
-      strategies: ['mathematical-patterns', 'neural-network'],
-      combination: { mainNumbers: [4, 9, 15, 20, 25], complementaryNumber: 4 }
-    },
-    {
-      id: 'hybrid-3',
-      name: 'Fibonacci + Premiers',
-      strategies: ['fibonacci', 'prime-numbers'],
-      combination: { mainNumbers: [2, 3, 5, 7, 11], complementaryNumber: 2 }
-    },
-    {
-      id: 'hybrid-4',
-      name: 'Triple Stratégie',
-      strategies: ['hot-cold-hybrid', 'correlations', 'mathematical-patterns'],
-      combination: { mainNumbers: [7, 12, 16, 21, 28], complementaryNumber: 5 }
-    }
-  ];
+// Utilitaires
+function uniqueSorted(arr: number[]) {
+  return Array.from(new Set(arr.filter(n => typeof n === 'number'))).sort((a,b)=>a-b);
+}
 
-  return testCombinations;
+function capBasePool(basePool?: number[]) {
+  if (!Array.isArray(basePool)) return undefined;
+  const clean = uniqueSorted(basePool.filter(n => n >= 1 && n <= 49)).slice(0, 20);
+  return clean.length ? clean : undefined;
+}
+
+function hashString(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24);
+  }
+  return (h >>> 0);
+}
+
+function pickFiveFromPool(pool: number[], seed: number): number[] {
+  if (pool.length <= 5) return uniqueSorted(pool);
+  const selected: number[] = [];
+  const used = new Set<number>();
+  const step = Math.max(1, Math.floor(pool.length / 5));
+  let idx = seed % pool.length;
+  while (selected.length < 5) {
+    idx = (idx + step + 17) % pool.length;
+    const n = pool[idx];
+    if (!used.has(n)) { used.add(n); selected.push(n); }
+  }
+  return uniqueSorted(selected);
+}
+
+function pickComplementary(seed: number): number {
+  return (seed % 10) + 1; // 1..10
+}
+
+function loadMergedPatterns(): Array<{ id: string; label?: string; description?: string }> {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const primary = path.join(process.cwd(), 'data', 'loto_patterns_catalog_v2.json');
+    const fallback = path.join(process.cwd(), 'data', 'loto_patterns_catalog.json');
+    const readJson = (p: string) => { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return null; } };
+    const jsonV2 = fs.existsSync(primary) ? readJson(primary) : null;
+    const jsonV1 = fs.existsSync(fallback) ? readJson(fallback) : null;
+    const p2 = Array.isArray(jsonV2?.patterns) ? jsonV2.patterns : [];
+    const p1 = Array.isArray(jsonV1?.patterns) ? jsonV1.patterns : [];
+    const map: Record<string, any> = {};
+    for (const p of p1) { if (p && p.id) map[p.id] = p; }
+    for (const p of p2) { if (p && p.id) map[p.id] = { ...map[p.id], ...p }; }
+    return Object.values(map);
+  } catch {
+    return [];
+  }
+}
+
+function generateCombinationsFromPatterns(basePool?: number[], maxGenerated: number = 300) {
+  const base = capBasePool(basePool) || Array.from({ length: 49 }, (_, i) => i + 1).slice(0, 20);
+  const patterns = loadMergedPatterns();
+  const combos: Array<{ id: string; name: string; strategies: string[]; combination: { mainNumbers: number[]; complementaryNumber: number } }> = [];
+
+  const addCombo = (strategies: string[]) => {
+    if (combos.length >= maxGenerated) return;
+    const id = strategies.join('+');
+    const seed = hashString(id);
+    const main = pickFiveFromPool(base, seed);
+    const comp = pickComplementary(seed >>> 3);
+    combos.push({ id: `pat-${id}`, name: strategies.join(' + '), strategies, combination: { mainNumbers: main, complementaryNumber: comp } });
+  };
+
+  // Solos
+  for (const p of patterns) { addCombo([p.id]); if (combos.length >= maxGenerated) break; }
+  if (combos.length < maxGenerated) {
+    // Paires
+    for (let i = 0; i < patterns.length && combos.length < maxGenerated; i++) {
+      for (let j = i + 1; j < patterns.length && combos.length < maxGenerated; j++) {
+        addCombo([patterns[i].id, patterns[j].id]);
+      }
+    }
+  }
+  if (combos.length < maxGenerated) {
+    // Triplets
+    for (let i = 0; i < patterns.length && combos.length < maxGenerated; i++) {
+      for (let j = i + 1; j < patterns.length && combos.length < maxGenerated; j++) {
+        for (let k = j + 1; k < patterns.length && combos.length < maxGenerated; k++) {
+          addCombo([patterns[i].id, patterns[j].id, patterns[k].id]);
+        }
+      }
+    }
+  }
+
+  // Fallback si catalogue vide: quelques combinaisons neutres depuis base
+  if (combos.length === 0) {
+    for (let s = 0; s < Math.min(50, maxGenerated); s++) {
+      const main = pickFiveFromPool(base, 1319 + s * 37);
+      const comp = pickComplementary(9917 + s);
+      combos.push({ id: `auto-${s}`, name: 'auto', strategies: [], combination: { mainNumbers: main, complementaryNumber: comp } });
+    }
+  }
+
+  return combos;
 }
 
 export async function POST(request: NextRequest) {
@@ -79,7 +113,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { 
       drawResult,
-      limit = 10
+      limit = 10,
+      basePool
     } = body;
 
     // Validation des données
@@ -103,27 +138,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Génère les combinaisons directement (pas de dépendance au gestionnaire)
-    const availableStrategies = [
-      { id: 'hot-cold-hybrid', name: 'Hot-Cold Hybride', description: 'Mélange optimal' },
-      { id: 'correlations', name: 'Corrélations Fortes', description: 'Corrélations statistiques' },
-      { id: 'anti-correlations', name: 'Anti-Corrélations', description: 'Évite les mauvaises combinaisons' },
-      { id: 'temporal-patterns', name: 'Patterns Temporels', description: 'Cycles de récurrence' },
-      { id: 'mathematical-patterns', name: 'Patterns Mathématiques', description: 'Structures mathématiques' },
-      { id: 'volatility-optimized', name: 'Volatilité Optimisée', description: 'Équilibre stabilité/opportunité' },
-      { id: 'astrological', name: 'Astrologique', description: 'Signes astrologiques' },
-      { id: 'numerology', name: 'Numérologie', description: 'Signification des nombres' },
-      { id: 'geometric', name: 'Géométrique', description: 'Patterns géométriques' },
-      { id: 'chaos-theory', name: 'Théorie du Chaos', description: 'Attracteurs étranges' },
-      { id: 'quantum', name: 'Quantique', description: 'Superposition quantique' },
-      { id: 'neural-network', name: 'Réseau de Neurones', description: 'IA et machine learning' },
-      { id: 'fibonacci', name: 'Suite de Fibonacci', description: 'Nombres de Fibonacci' },
-      { id: 'golden-ratio', name: 'Nombre d\'Or', description: 'Ratio d\'or (1.618)' },
-      { id: 'prime-numbers', name: 'Nombres Premiers', description: 'Exclusivement des nombres premiers' }
-    ];
-
-    // Génère quelques combinaisons de test
-    const combinations = generateTestCombinations(availableStrategies);
+    // Génère des combinaisons basées sur le catalogue de patterns fusionné (v2 prioritaire) et le basePool fourni
+    const combinations = generateCombinationsFromPatterns(basePool, Math.max(50, Math.min(500, limit * 10)));
 
     // Initialise l'analyseur
     const analyzer = new DrawProximityAnalyzer();
@@ -190,14 +206,13 @@ export async function GET(request: NextRequest) {
 
       case 'stats':
         // Retourne les statistiques des combinaisons disponibles
-        const testCombinations = generateTestCombinations([]);
-        
+        // Pour l'instant, retournons des statistiques de base
         return NextResponse.json({
           success: true,
           stats: {
-            totalCombinations: testCombinations.length,
+            totalCombinations: 19068840, // Total des combinaisons possibles
             testedCombinations: 0,
-            estimatedCombinations: testCombinations.length,
+            estimatedCombinations: 19068840,
             lastUpdated: new Date().toISOString()
           }
         });

@@ -103,7 +103,8 @@ export default function PhoneBanner({
     left: 0,
     right: 0,
     width: '100vw',
-    height: '56px',
+    height: 'auto',
+    minHeight: '60px',
     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     borderBottom: '2px solid #4c1d95',
     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
@@ -112,7 +113,7 @@ export default function PhoneBanner({
     alignItems: 'center',
     padding: '6px 12px',
     boxSizing: 'border-box' as const,
-    overflow: 'hidden'
+    overflow: 'visible'
   };
 
   const buttonStyle = {
@@ -151,8 +152,52 @@ export default function PhoneBanner({
   return (
     <div style={bannerStyle}>
       {/* 3 BOUTONS MAXIMISÉS */}
-      <div style={{ display: 'flex', gap: '6px', width: '100%', padding: '3px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: '6px', width: '100%', padding: '3px' }}>
+        {/* LIGNE 1: Dernier tirage en priorité (plein largeur) */}
+        {lastDraw && lastDraw.numbers && lastDraw.numbers.length > 0 && (
+          <div style={{ ...buttonStyle, flex: '1 1 100%' }}>
+            <div style={{ textAlign: 'center', lineHeight: '1.1' }}>
+              <div style={{ fontSize: '12px', fontWeight: '800', marginBottom: '2px' }}>DERNIER</div>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '3px', flexWrap: 'wrap' as const }}>
+                {lastDraw.numbers.filter(n => n && n > 0).slice(0, 5).map((num, index) => (
+                  <div key={index} style={{
+                    width: '18px',
+                    height: '18px',
+                    background: '#ffffff',
+                    color: '#000000',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '10px',
+                    fontWeight: '900',
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
+                  }}>
+                    {num}
+                  </div>
+                ))}
+                <div style={{
+                  width: '18px',
+                  height: '18px',
+                  background: '#ff6b6b',
+                  color: '#000000',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '10px',
+                  fontWeight: '900',
+                  marginLeft: '3px',
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
+                }}>
+                  {lastDraw.complementary || '?'}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
+        {/* LIGNE 2: Menu + Titre/Compte à rebours/Combinaisons */}
         {/* Bouton 1: Menu avec mode actuel */}
         <button style={buttonStyle} onClick={handleMenuClick}>
           <div style={{ textAlign: 'center', lineHeight: '1.1' }}>
@@ -168,68 +213,17 @@ export default function PhoneBanner({
         <div style={buttonStyle}>
           <div style={{ textAlign: 'center', lineHeight: '1.1' }}>
             <div style={{ fontSize: '14px', fontWeight: '900' }}>KDO LOTO</div>
+            {/* Compte à rebours entre le titre et le nombre de combinaisons */}
+            <div style={{ fontSize: '13px', fontWeight: '900', margin: '2px 0' }}>
+              {timeLeft || 'Calcul...'}
+            </div>
             <div style={{ fontSize: '16px', fontWeight: '800', color: '#000000 !important' }}>
               {(remainingCombinations / 1000000).toFixed(1)} M
             </div>
             <div style={{ fontSize: '12px', fontWeight: '700' }}>combinaisons</div>
           </div>
         </div>
-
-        {/* Bouton 3: Compte à rebours */}
-        <div style={buttonStyle}>
-          <div style={{ textAlign: 'center', lineHeight: '1.1' }}>
-            <div style={{ fontSize: '12px', fontWeight: '800' }}>PROCHAIN</div>
-            <div style={{ fontSize: '18px', fontWeight: '900' }}>
-              {timeLeft || 'Calcul...'}
-            </div>
-          </div>
-        </div>
-
-        {/* Bouton 4: Dernier tirage */}
-        {lastDraw && lastDraw.numbers && lastDraw.numbers.length > 0 && (
-          <div style={buttonStyle}>
-            <div style={{ textAlign: 'center', lineHeight: '1.1' }}>
-              <div style={{ fontSize: '12px', fontWeight: '800', marginBottom: '2px' }}>DERNIER</div>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '2px', flexWrap: 'wrap' }}>
-                {/* 5 NUMÉROS */}
-                {lastDraw.numbers.filter(n => n && n > 0).slice(0, 5).map((num, index) => (
-                  <div key={index} style={{
-                    width: '16px',
-                    height: '16px',
-                    background: '#ffffff',
-                    color: '#000000',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '9px',
-                    fontWeight: '900',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
-                  }}>
-                    {num}
-                  </div>
-                ))}
-                {/* COMPLÉMENTAIRE */}
-                <div style={{
-                  width: '16px',
-                  height: '16px',
-                  background: '#ff6b6b',
-                  color: '#000000',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '9px',
-                  fontWeight: '900',
-                  marginLeft: '2px',
-                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
-                }}>
-                  {lastDraw.complementary || '?'}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        
       </div>
 
       {/* Menu déroulant des modes */}
@@ -249,7 +243,7 @@ export default function PhoneBanner({
             <div style={{ fontSize: '12px', fontWeight: '800', color: '#000000' }}>CHOISIR MODE</div>
           </div>
           
-          {/* Mode Débutant */}
+        {/* Centre Loto Unifié */}
           <button 
             onClick={() => handleModeChange('beginner')}
             style={{

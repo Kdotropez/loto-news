@@ -1,5 +1,6 @@
 import { dataStorage, Tirage } from './data-storage';
 import { csvImporter } from './csv-importer';
+import { jsonImporter } from './json-importer';
 
 export interface FDJTirageData {
   date: string;
@@ -35,23 +36,28 @@ export class DataCollector {
   private readonly HISTORIQUE_URL = '/jeux-de-tirage/loto/historique';
 
   /**
-   * Importe les données historiques depuis les fichiers CSV
+   * Importe les données historiques depuis le fichier JSON complet
    */
   async downloadHistoricalData(): Promise<FDJTirageData[]> {
     try {
-      console.log('Import des données historiques depuis les fichiers CSV...');
+      console.log('Import des données historiques depuis le fichier JSON complet...');
       
-      if (!csvImporter.hasCSVFiles()) {
-        console.log('Aucun fichier CSV trouvé, génération de données de test...');
+      if (jsonImporter.hasJSONFile()) {
+        // Import du fichier JSON complet
+        const result = await jsonImporter.importJSONFile();
+        console.log(`Import JSON terminé: ${result.imported} tirages importés, ${result.errors} erreurs`);
+        
+        // Retourner des données vides car l'import est déjà fait
+        return [];
+      } else if (csvImporter.hasCSVFiles()) {
+        console.log('Fichier JSON non trouvé, utilisation des fichiers CSV...');
+        const result = await csvImporter.importAllCSVFiles();
+        console.log(`Import CSV terminé: ${result.imported} tirages importés depuis ${result.files.length} fichiers`);
+        return [];
+      } else {
+        console.log('Aucun fichier de données trouvé, génération de données de test...');
         return this.generateMockHistoricalData();
       }
-
-      // Import des fichiers CSV réels
-      const result = await csvImporter.importAllCSVFiles();
-      console.log(`Import terminé: ${result.imported} tirages importés depuis ${result.files.length} fichiers`);
-      
-      // Retourner des données vides car l'import est déjà fait
-      return [];
     } catch (error) {
       console.error('Erreur lors de l\'import des données:', error);
       throw new Error('Impossible d\'importer les données historiques');
@@ -167,10 +173,15 @@ export class DataCollector {
    */
   async importDataToDatabase(): Promise<{ imported: number; errors: number }> {
     try {
-      if (csvImporter.hasCSVFiles()) {
-        // Import direct des fichiers CSV
+      if (jsonImporter.hasJSONFile()) {
+        // Import du fichier JSON complet (priorité)
+        const result = await jsonImporter.importJSONFile();
+        console.log(`Import JSON terminé: ${result.imported} tirages importés, ${result.errors} erreurs`);
+        return { imported: result.imported, errors: result.errors };
+      } else if (csvImporter.hasCSVFiles()) {
+        // Import des fichiers CSV (fallback)
         const result = await csvImporter.importAllCSVFiles();
-        console.log(`Import terminé: ${result.imported} tirages importés, ${result.errors} erreurs`);
+        console.log(`Import CSV terminé: ${result.imported} tirages importés, ${result.errors} erreurs`);
         return { imported: result.imported, errors: result.errors };
       } else {
         // Génération de données de test

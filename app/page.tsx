@@ -5,7 +5,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Monitor, Smartphone, Tablet, ArrowRight, CheckCircle, RotateCcw, Database, Download, Clock, Trophy, Timer, Menu, Award, Clock3 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -34,8 +34,32 @@ export default function Home() {
 // Interface de sélection des modes
 function ModeSelectionInterface() {
   const [selectedMode, setSelectedMode] = useState<ComplexityLevel | null>(null);
-  const [showCodePrompt, setShowCodePrompt] = useState<ComplexityLevel | null>(null);
-  const [enteredCode, setEnteredCode] = useState('');
+  // Nettoyage des états de code premium supprimés
+  const enteredCode = '' as const;
+  const showCodePrompt = null as any;
+  const setShowCodePrompt = (_: any) => {};
+  const setEnteredCode = (_: any) => {};
+
+  // PRNG déterministe (LCG) pour éviter les décalages SSR/CSR
+  const lcg = (seed: number) => {
+    let s = (seed >>> 0) || 1;
+    return () => {
+      s = (1103515245 * s + 12345) % 0x80000000; // 2^31
+      return s / 0x80000000;
+    };
+  };
+
+  // Particules seedées pour cohérence hydratation
+  const particles = useMemo(() => {
+    return Array.from({ length: 20 }, (_, i) => {
+      const rnd = lcg(0x9e3779b9 ^ (i + 1));
+      const left = `${(rnd() * 100).toFixed(6)}%`;
+      const top = `${(rnd() * 100).toFixed(6)}%`;
+      const duration = 3 + rnd() * 2; // 3..5s
+      const delay = rnd() * 2;        // 0..2s
+      return { left, top, duration, delay };
+    });
+  }, []);
 
   // Si un mode est sélectionné, afficher l'interface correspondante
   if (selectedMode) {
@@ -46,53 +70,25 @@ function ModeSelectionInterface() {
   }
 
   // Fonction pour gérer la sélection des modes
-  const handleModeSelection = (mode: ComplexityLevel) => {
-    if (mode === 'beginner') {
-      // Mode débutant : accès libre
-      setSelectedMode(mode);
-    } else {
-      // Modes payants : demander le code
-      setShowCodePrompt(mode);
-      setEnteredCode('');
-    }
+  const handleModeSelection = () => {
+    setSelectedMode('beginner');
   };
 
-  // Vérifier le code d'accès
-  const verifyCode = () => {
-    if (enteredCode === '2025') {
-      setSelectedMode(showCodePrompt);
-      setShowCodePrompt(null);
-      setEnteredCode('');
-    } else {
-      // Code incorrect - réinitialiser
-      setEnteredCode('');
-      // Pas de message d'erreur pour garder le code secret
-    }
-  };
+  // Vérifier le code d'accès (désactivé - un seul mode)
+  const verifyCode = () => {};
 
   // Page de sélection des modes
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
       {/* Particules flottantes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
+        {particles.map((p, i) => (
           <motion.div
             key={i}
             className="absolute w-2 h-2 bg-teal-300/30 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0.3, 0.8, 0.3],
-              scale: [0.5, 1, 0.5],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
+            style={{ left: p.left, top: p.top }}
+            animate={{ y: [0, -30, 0], opacity: [0.3, 0.8, 0.3], scale: [0.5, 1, 0.5] }}
+            transition={{ duration: p.duration, repeat: Infinity, delay: p.delay }}
           />
         ))}
       </div>
@@ -129,15 +125,15 @@ function ModeSelectionInterface() {
           </motion.div>
         </motion.div>
 
-        {/* Sélection des modes */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {/* Mode Débutant */}
+        {/* Sélection du mode (Centre Loto Unifié uniquement) */}
+        <div className="grid grid-cols-1 gap-8 max-w-3xl mx-auto">
+          {/* Centre Loto Unifié */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="relative group cursor-pointer"
-            onClick={() => handleModeSelection('beginner')}
+            onClick={handleModeSelection}
             whileHover={{ scale: 1.05, y: -10 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -154,7 +150,7 @@ function ModeSelectionInterface() {
                   🌱
                 </motion.div>
                 
-                <h3 className="text-2xl font-bold mb-3">Mode Débutant</h3>
+                <h3 className="text-2xl font-bold mb-3">Centre Loto Unifié</h3>
                 <p className="text-emerald-100 mb-4 text-sm">
                   Interface simple et guidée pour découvrir le loto
                 </p>
@@ -170,6 +166,8 @@ function ModeSelectionInterface() {
                   </div>
                 </div>
                 
+                {/* Sélecteur de période supprimé de l'accueil pour éviter les conflits */}
+
                 <motion.div
                   className="mt-4 bg-emerald-600 hover:bg-emerald-700 rounded-full py-2 px-4 text-sm font-bold transition-colors"
                   whileHover={{ scale: 1.05 }}
@@ -180,142 +178,10 @@ function ModeSelectionInterface() {
             </div>
           </motion.div>
 
-          {/* Mode Intermédiaire */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="relative group cursor-pointer"
-            onClick={() => handleModeSelection('intermediate')}
-            whileHover={{ scale: 1.05, y: -10 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <div className="bg-gradient-to-br from-amber-400 to-orange-500 rounded-3xl p-8 shadow-2xl border-4 border-amber-300 h-full">
-              <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent rounded-3xl pointer-events-none"></div>
-              
-              <div className="relative z-10 text-center text-white">
-                <motion.div
-                  animate={{ scale: [1, 1.1, 1], rotate: [0, -5, 5, 0] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                  className="text-6xl mb-4"
-                >
-                  ⚡
-                </motion.div>
-                
-                <h3 className="text-2xl font-bold mb-3">Mode Intermédiaire</h3>
-                <p className="text-amber-100 mb-4 text-sm">
-                  Plus d'options et d'analyses pour optimiser vos chances
-                </p>
-                
-                <div className="bg-white/20 rounded-lg p-3 text-xs">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Analyses avancées</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Stratégies multiples</span>
-                  </div>
-                </div>
-                
-                <motion.div
-                  className="mt-4 bg-amber-600 hover:bg-amber-700 rounded-full py-2 px-4 text-sm font-bold relative transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  ⚡ EXPLORER
-                  <div className="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs px-2 py-1 rounded-full font-bold">
-                    💎
-                  </div>
-                </motion.div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Mode Expert */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="relative group cursor-pointer"
-            onClick={() => handleModeSelection('expert')}
-            whileHover={{ scale: 1.05, y: -10 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <div className="bg-gradient-to-br from-purple-400 to-indigo-500 rounded-3xl p-8 shadow-2xl border-4 border-purple-300 h-full">
-              <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent rounded-3xl pointer-events-none"></div>
-              
-              <div className="relative z-10 text-center text-white">
-                <motion.div
-                  animate={{ scale: [1, 1.1, 1], rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                  className="text-6xl mb-4"
-                >
-                  🎯
-                </motion.div>
-                
-                <h3 className="text-2xl font-bold mb-3">Mode Expert</h3>
-                <p className="text-purple-100 mb-4 text-sm">
-                  Contrôle total avec analyses statistiques poussées
-                </p>
-                
-                <div className="bg-white/20 rounded-lg p-3 text-xs">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Statistiques complètes</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Contrôle avancé</span>
-                  </div>
-                </div>
-                
-                <motion.div
-                  className="mt-4 bg-purple-600 hover:bg-purple-700 rounded-full py-2 px-4 text-sm font-bold relative transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  🎯 MAÎTRISER
-                  <div className="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs px-2 py-1 rounded-full font-bold">
-                    💎
-                  </div>
-                </motion.div>
-              </div>
-            </div>
-          </motion.div>
+          {/* Autres modes supprimés */}
         </div>
 
-        {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="text-center mt-16 text-teal-600"
-        >
-          <div className="bg-white/80 rounded-xl p-6 max-w-4xl mx-auto">
-            <h4 className="font-bold text-teal-800 mb-4 text-lg">🎯 Processus en 4 étapes :</h4>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-              <div className="text-center">
-                <div className="text-2xl mb-2">1️⃣</div>
-                <div className="font-semibold text-teal-800">Sélectionner</div>
-                <div className="text-teal-600">IA automatique ou Bingo manuel</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl mb-2">2️⃣</div>
-                <div className="font-semibold text-teal-800">Configurer</div>
-                <div className="text-teal-600">Nombre de grilles et options</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl mb-2">3️⃣</div>
-                <div className="font-semibold text-teal-800">Générer</div>
-                <div className="text-teal-600">Grilles simples ou multiples</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl mb-2">4️⃣</div>
-                <div className="font-semibold text-teal-800">Sauvegarder</div>
-                <div className="text-teal-600">Contrôle après tirage officiel</div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        {/* Footer supprimé (Processus en 4 étapes) */}
       </div>
 
       {/* Modale de saisie du code d'accès */}
@@ -706,24 +572,14 @@ function CurrentVersionInterface() {
   const handleImportData = async () => {
     setIsLoading(true);
     try {
-      // Essayer d'abord l'import distant (compatible Vercel)
-      const response = await fetch('/api/import-remote-data', { method: 'POST' });
+      const response = await fetch('/api/import-csv', { method: 'POST' });
       const result = await response.json();
       
       if (result.success) {
         toast.success(`✅ ${result.imported} tirages importés avec succès !`);
         await checkDataStatus();
       } else {
-        // Fallback vers l'import CSV local
-        const csvResponse = await fetch('/api/import-csv', { method: 'POST' });
-        const csvResult = await csvResponse.json();
-        
-        if (csvResult.success) {
-          toast.success(`✅ ${csvResult.imported} tirages importés avec succès !`);
-          await checkDataStatus();
-        } else {
-          toast.error('❌ Erreur lors de l\'import des données');
-        }
+        toast.error('❌ Erreur lors de l\'import des données');
       }
     } catch (error) {
       toast.error('❌ Erreur lors de l\'import des données');
@@ -1060,24 +916,14 @@ function NewVersionInterface({
   const handleImportData = async () => {
     setIsLoading(true);
     try {
-      // Essayer d'abord l'import distant (compatible Vercel)
-      const response = await fetch('/api/import-remote-data', { method: 'POST' });
+      const response = await fetch('/api/import-csv', { method: 'POST' });
       const result = await response.json();
       
       if (result.success) {
         toast.success(`✅ ${result.imported} tirages importés avec succès !`);
         await checkDataStatus();
       } else {
-        // Fallback vers l'import CSV local
-        const csvResponse = await fetch('/api/import-csv', { method: 'POST' });
-        const csvResult = await csvResponse.json();
-        
-        if (csvResult.success) {
-          toast.success(`✅ ${csvResult.imported} tirages importés avec succès !`);
-          await checkDataStatus();
-        } else {
-          toast.error('❌ Erreur lors de l\'import des données');
-        }
+        toast.error('❌ Erreur lors de l\'import des données');
       }
     } catch (error) {
       toast.error('❌ Erreur lors de l\'import des données');
@@ -1204,10 +1050,77 @@ function NewVersionInterface({
         return (
           <header className="bg-emerald-500 text-white shadow-lg">
             <div className="px-4 py-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {/* Boutons de contrôle Mobile */}
-                  <div className="flex gap-1">
+              <div className="flex flex-col gap-3">
+                {/* LIGNE 1: Dernier tirage en pleine largeur */}
+                <div className="w-full flex items-center justify-center">
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      <Award className="w-3 h-3" />
+                      {lastDraw && (
+                        <span className="capitalize" style={{color: 'white', fontSize: '12px', fontWeight: 'bold'}}>
+                          {new Date(lastDraw.date).toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: '2-digit' })}
+                        </span>
+                      )}
+                    </div>
+                    <div className="loto-numbers">
+                      {lastDraw ? (
+                        <>
+                          {lastDraw.numbers.map((num: number, index: number) => (
+                            <span key={index} className="loto-ball">{num}</span>
+                          ))}
+                          <span className="plus-sign">+</span>
+                          <span className="loto-ball complementary">{lastDraw.complementary}</span>
+                        </>
+                      ) : (
+                        <span style={{color: 'white', fontSize: '12px'}}>Aucun tirage</span>
+                      )}
+                    </div>
+                    <button
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/opendatasoft-sync', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'sync' })
+                          });
+                          const result = await response.json();
+                          if (result.success) {
+                            if (result.result.newTirages > 0) {
+                              alert(`✅ ${result.result.newTirages} nouveaux tirages importés !`);
+                              fetchLastDraw(); // Recharger le dernier tirage
+                            } else {
+                              alert('✅ Les données sont déjà à jour');
+                            }
+                          } else {
+                            alert('❌ Erreur de synchronisation');
+                          }
+                        } catch (error) {
+                          alert('❌ Erreur de connexion');
+                        }
+                      }}
+                      style={{
+                        backgroundColor: 'rgba(255,255,255,0.3)',
+                        border: '1px solid rgba(255,255,255,0.5)',
+                        borderRadius: '6px',
+                        color: 'white',
+                        fontSize: '16px',
+                        padding: '4px 6px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                      title="Mettre à jour les tirages FDJ"
+                    >
+                      🔄
+                    </button>
+                  </div>
+                </div>
+
+                {/* LIGNE 2: Contrôles + titre + compte à rebours/combinaisons (grille 3 colonnes) */}
+                <div className="grid grid-cols-3 items-center">
+                  {/* Colonne gauche: bouton maison */}
+                  <div className="flex items-center">
                     <button
                       onClick={() => onBackToModeSelection && onBackToModeSelection()}
                       className="banner-hamburger-mobile"
@@ -1232,51 +1145,19 @@ function NewVersionInterface({
                         🏠
                       </div>
                     </button>
-                    <div className="banner-button banner-draw-mobile">
-                      <Award className="w-4 h-4" />
-                      <div className="loto-numbers">
-                        {lastDraw ? (
-                          <>
-                            {lastDraw.numbers.map((num: number, index: number) => (
-                              <span key={index} className="loto-ball">{num}</span>
-                            ))}
-                            <span className="plus-sign">+</span>
-                            <span className="loto-ball complementary">{lastDraw.complementary}</span>
-                          </>
-                        ) : (
-                          <span style={{color: 'white', fontSize: '10px'}}>Aucun tirage</span>
-                        )}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        // TODO: Implémenter la sélection IA automatique
-                        toast.success('🤖 Sélection IA en cours de développement');
-                      }}
-                      className="banner-button banner-countdown-mobile"
-                      title="Numéros sélectionnés par IA"
-                      style={{
-                        cursor: 'pointer',
-                        border: 'none',
-                        backgroundColor: 'transparent'
-                      }}
-                    >
-                      <div style={{
-                        color: 'white',
-                        fontSize: '16px',
-                        fontWeight: 'bold',
-                        lineHeight: '1',
-                        textAlign: 'center'
-                      }}>
-                        🤖
-                      </div>
-                      <span style={{ fontSize: '10px' }}>IA</span>
-                    </button>
                   </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold">{(globalRemainingCombinations / 1000000).toFixed(1)}M</div>
-                  <p className="text-xs opacity-90">Combinaisons</p>
+
+                  {/* Colonne centre: Titre (plus grand) */}
+                  <div className="text-center">
+                    <h1 className="text-white text-lg font-extrabold tracking-wide">Kdo Loto</h1>
+                  </div>
+
+                  {/* Colonne droite: Compte à rebours + combinaisons sur une seule ligne (même taille) */}
+                  <div className="flex items-center justify-end gap-3 whitespace-nowrap text-sm">
+                    <span className="font-semibold opacity-90">{countdown}</span>
+                    <span className="font-semibold">{(globalRemainingCombinations / 1000000).toFixed(1)}M</span>
+                    <span className="font-semibold opacity-90">Combinaisons</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1315,49 +1196,91 @@ function NewVersionInterface({
                         🏠
                       </div>
                     </button>
-                    <div className="banner-button banner-draw-tablet">
-                      <Award className="w-5 h-5" />
-                      <div className="loto-numbers">
-                        {lastDraw ? (
-                          <>
-                            {lastDraw.numbers.map((num: number, index: number) => (
-                              <span key={index} className="loto-ball">{num}</span>
-                            ))}
-                            <span className="plus-sign">+</span>
-                            <span className="loto-ball complementary">{lastDraw.complementary}</span>
-                          </>
-                        ) : (
-                          <span style={{color: 'white', fontSize: '12px'}}>Aucun tirage</span>
+                    <div className="banner-button banner-draw-tablet flex-col">
+                      <div className="flex items-center gap-1 mb-1">
+                        <Award className="w-4 h-4" />
+                        {lastDraw && (
+                          <span style={{color: 'white', fontSize: '10px', fontWeight: 'bold'}}>
+                            {new Date(lastDraw.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' })}
+                          </span>
                         )}
                       </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        // TODO: Implémenter la sélection IA automatique
-                        toast.success('🤖 Sélection IA en cours de développement');
-                      }}
-                      className="banner-button banner-countdown-tablet"
-                      title="Numéros sélectionnés par IA"
-                      style={{
-                        cursor: 'pointer',
-                        border: 'none',
-                        backgroundColor: 'transparent'
-                      }}
-                    >
-                      <div style={{
-                        color: 'white',
-                        fontSize: '20px',
-                        fontWeight: 'bold',
-                        lineHeight: '1',
-                        textAlign: 'center'
-                      }}>
-                        🤖
+                      <div className="flex items-center gap-3">
+                        <div className="loto-numbers">
+                          {lastDraw ? (
+                            <>
+                              {lastDraw.numbers.map((num: number, index: number) => (
+                                <span key={index} className="loto-ball">{num}</span>
+                              ))}
+                              <span className="plus-sign">+</span>
+                              <span className="loto-ball complementary">{lastDraw.complementary}</span>
+                            </>
+                          ) : (
+                            <span style={{color: 'white', fontSize: '12px'}}>Aucun tirage</span>
+                          )}
+                        </div>
+                        <button
+                          onClick={async () => {
+                            try {
+                              const response = await fetch('/api/opendatasoft-sync', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ action: 'sync' })
+                              });
+                              const result = await response.json();
+                              if (result.success) {
+                                if (result.result.newTirages > 0) {
+                                  alert(`✅ ${result.result.newTirages} nouveaux tirages importés !`);
+                                  fetchLastDraw(); // Recharger le dernier tirage
+                                } else {
+                                  alert('✅ Les données sont déjà à jour');
+                                }
+                              } else {
+                                alert('❌ Erreur de synchronisation');
+                              }
+                            } catch (error) {
+                              alert('❌ Erreur de connexion');
+                            }
+                          }}
+                          style={{
+                            backgroundColor: 'rgba(255,255,255,0.3)',
+                            border: '1px solid rgba(255,255,255,0.5)',
+                            borderRadius: '8px',
+                            color: 'white',
+                            fontSize: '18px',
+                            padding: '6px 8px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                          title="Mettre à jour les tirages FDJ"
+                        >
+                          🔄
+                        </button>
                       </div>
-                      <span style={{ fontSize: '12px' }}>IA</span>
-                    </button>
+                    </div>
+                  </div>
+                  
+                  {/* Titre centré */}
+                  <div className="absolute left-1/2 transform -translate-x-1/2">
+                    <h1 style={{
+                      color: 'white',
+                      fontSize: '20px',
+                      fontWeight: 'bold',
+                      textAlign: 'center',
+                      textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+                    }}>
+                      Kdo Loto
+                    </h1>
                   </div>
                 </div>
                 <div className="flex items-center gap-6">
+                  {/* Compte à rebours placé avant les compteurs */}
+                  <div className="text-center">
+                    <div className="text-xs font-semibold">{countdown}</div>
+                    <p className="text-[10px] opacity-90">Prochain tirage</p>
+                  </div>
                   <div className="text-center">
                     <div className="text-lg font-bold">{(globalRemainingCombinations / 1000000).toFixed(1)}M</div>
                     <p className="text-xs opacity-90">Principal</p>
@@ -1404,49 +1327,91 @@ function NewVersionInterface({
                         🏠
                       </div>
                     </button>
-                    <div className="banner-button banner-draw-desktop">
-                      <Award className="w-6 h-6" />
-                      <div className="loto-numbers">
-                        {lastDraw ? (
-                          <>
-                            {lastDraw.numbers.map((num: number, index: number) => (
-                              <span key={index} className="loto-ball">{num}</span>
-                            ))}
-                            <span className="plus-sign">+</span>
-                            <span className="loto-ball complementary">{lastDraw.complementary}</span>
-                          </>
-                        ) : (
-                          <span style={{color: 'white', fontSize: '14px'}}>Aucun tirage</span>
+                    <div className="banner-button banner-draw-desktop flex-col">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Award className="w-5 h-5" />
+                        {lastDraw && (
+                          <span style={{color: 'white', fontSize: '12px', fontWeight: 'bold'}}>
+                            Tirage du {new Date(lastDraw.date).toLocaleDateString('fr-FR')}
+                          </span>
                         )}
                       </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        // TODO: Implémenter la sélection IA automatique
-                        toast.success('🤖 Sélection IA en cours de développement');
-                      }}
-                      className="banner-button banner-countdown-desktop"
-                      title="Numéros sélectionnés par IA"
-                      style={{
-                        cursor: 'pointer',
-                        border: 'none',
-                        backgroundColor: 'transparent'
-                      }}
-                    >
-                      <div style={{
-                        color: 'white',
-                        fontSize: '24px',
-                        fontWeight: 'bold',
-                        lineHeight: '1',
-                        textAlign: 'center'
-                      }}>
-                        🤖
+                      <div className="flex items-center gap-4">
+                        <div className="loto-numbers">
+                          {lastDraw ? (
+                            <>
+                              {lastDraw.numbers.map((num: number, index: number) => (
+                                <span key={index} className="loto-ball">{num}</span>
+                              ))}
+                              <span className="plus-sign">+</span>
+                              <span className="loto-ball complementary">{lastDraw.complementary}</span>
+                            </>
+                          ) : (
+                            <span style={{color: 'white', fontSize: '14px'}}>Aucun tirage</span>
+                          )}
+                        </div>
+                        <button
+                          onClick={async () => {
+                            try {
+                              const response = await fetch('/api/opendatasoft-sync', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ action: 'sync' })
+                              });
+                              const result = await response.json();
+                              if (result.success) {
+                                if (result.result.newTirages > 0) {
+                                  alert(`✅ ${result.result.newTirages} nouveaux tirages importés !`);
+                                  fetchLastDraw(); // Recharger le dernier tirage
+                                } else {
+                                  alert('✅ Les données sont déjà à jour');
+                                }
+                              } else {
+                                alert('❌ Erreur de synchronisation');
+                              }
+                            } catch (error) {
+                              alert('❌ Erreur de connexion');
+                            }
+                          }}
+                          style={{
+                            backgroundColor: 'rgba(255,255,255,0.3)',
+                            border: '1px solid rgba(255,255,255,0.5)',
+                            borderRadius: '10px',
+                            color: 'white',
+                            fontSize: '20px',
+                            padding: '8px 12px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                          title="Mettre à jour les tirages FDJ"
+                        >
+                          🔄
+                        </button>
                       </div>
-                      <span style={{ fontSize: '14px' }}>IA</span>
-                    </button>
+                    </div>
+                  </div>
+                  
+                  {/* Titre centré */}
+                  <div className="absolute left-1/2 transform -translate-x-1/2">
+                    <h1 style={{
+                      color: 'white',
+                      fontSize: '24px',
+                      fontWeight: 'bold',
+                      textAlign: 'center',
+                      textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+                    }}>
+                      Kdo Loto
+                    </h1>
                   </div>
                 </div>
                 <div className="flex items-center gap-8">
+                  {/* Compte à rebours placé avant les compteurs */}
+                  <div className="text-center">
+                    <div className="text-sm font-semibold">{countdown}</div>
+                    <p className="text-xs opacity-90">Prochain</p>
+                  </div>
                   <div className="text-center">
                     <div className="text-xl font-bold">{(globalRemainingCombinations / 1000000).toFixed(1)}M</div>
                     <p className="text-xs opacity-90">Combinaisons principales</p>
@@ -1455,24 +1420,7 @@ function NewVersionInterface({
                     <div className="text-lg font-bold">{(globalRemainingCombinationsSecondTirage / 1000000).toFixed(1)}M</div>
                     <p className="text-xs opacity-90">Second tirage</p>
                   </div>
-                  <div className="text-center">
-                    <div className="text-lg font-bold">{chanceLevel}%</div>
-                    <p className="text-xs opacity-90">Niveau chance</p>
                   </div>
-                  {lastDraw && (
-                    <div className="flex items-center gap-1">
-                      {lastDraw.numbers.slice(0, 3).map((num: number, index: number) => (
-                        <span key={index} className="w-6 h-6 bg-white/20 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                          {num}
-                        </span>
-                      ))}
-                      <span className="text-white/60 mx-1">...</span>
-                      <span className="w-6 h-6 bg-amber-400 text-orange-900 text-xs font-bold rounded-full flex items-center justify-center">
-                        {lastDraw.complementary}
-                      </span>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           </header>

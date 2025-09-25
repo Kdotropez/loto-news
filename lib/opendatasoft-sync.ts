@@ -12,6 +12,23 @@ export interface OpenDataSoftTirage {
   boule_4: number;
   boule_5: number;
   numero_chance: number;
+  // Données de gains disponibles dans l'API
+  rapport_du_rang1: number;
+  nombre_de_gagnant_au_rang1: number;
+  rapport_du_rang2: number;
+  nombre_de_gagnant_au_rang2: number;
+  rapport_du_rang3: number;
+  nombre_de_gagnant_au_rang3: number;
+  rapport_du_rang4: number;
+  nombre_de_gagnant_au_rang4: number;
+  rapport_du_rang5: number;
+  nombre_de_gagnant_au_rang5: number;
+  rapport_du_rang6: number;
+  nombre_de_gagnant_au_rang6: number;
+  rapport_du_rang7: number;
+  nombre_de_gagnant_au_rang7: number;
+  // Distinguo 1er/2e tirage
+  '1er_ou_2eme_tirage': number;
 }
 
 export interface SyncResult {
@@ -28,27 +45,30 @@ export class OpenDataSoftSync {
   /**
    * Récupère les derniers tirages depuis une date donnée
    */
-  async fetchLatestTirages(sinceDate?: string, limit: number = 100): Promise<OpenDataSoftTirage[]> {
+  async fetchLatestTirages(sinceDate?: string, limit: number = 3000): Promise<OpenDataSoftTirage[]> {
     try {
+      // Récupère une grande page triée DESC, puis filtre côté client
       let url = `${this.API_BASE}?limit=${limit}&order_by=date_de_tirage%20desc`;
-      
-      if (sinceDate) {
-        // Filtrer par date si spécifiée
-        url += `&where=date_de_tirage%20%3E%20%27${sinceDate}%27`;
-      }
-      
       console.log(`🔍 Récupération depuis: ${url}`);
-      
+
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Erreur HTTP: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      console.log(`📊 ${data.results.length} tirages récupérés sur ${data.total_count} disponibles`);
-      
-      return data.results;
-      
+      const results: OpenDataSoftTirage[] = data.results || [];
+
+      if (!sinceDate) return results;
+
+      const since = new Date(String(sinceDate).slice(0,10));
+      const filtered = results.filter(r => {
+        const d = new Date(String(r.date_de_tirage).slice(0,10));
+        return d.getTime() > since.getTime();
+      });
+      console.log(`📊 ${filtered.length} tirages filtrés après ${sinceDate} (sur ${results.length})`);
+      return filtered;
+
     } catch (error) {
       console.error('❌ Erreur lors de la récupération:', error);
       throw error;
@@ -62,36 +82,39 @@ export class OpenDataSoftSync {
     return tirages.map(tirage => ({
       // Format FDJ original pour compatibilité totale
       id: parseInt(tirage.annee_numero_de_tirage) || Date.now(),
-      date: tirage.date_de_tirage,
+      date: (typeof tirage.date_de_tirage === 'string' ? tirage.date_de_tirage.slice(0, 10) : String(tirage.date_de_tirage).slice(0, 10)),
       numero_tirage: parseInt(tirage.annee_numero_de_tirage) || 0,
-      boule_1: tirage.boule_1,
-      boule_2: tirage.boule_2,
-      boule_3: tirage.boule_3,
-      boule_4: tirage.boule_4,
-      boule_5: tirage.boule_5,
-      numero_chance: tirage.numero_chance,
-      // Valeurs par défaut pour les gains (non disponibles dans OpenDataSoft)
-      gagnant_rang1: 0,
-      rapport_rang1: 0,
-      gagnant_rang2: 0,
-      rapport_rang2: 0,
-      gagnant_rang3: 0,
-      rapport_rang3: 0,
-      gagnant_rang4: 0,
-      rapport_rang4: 0,
-      gagnant_rang5: 0,
-      rapport_rang5: 0,
-      gagnant_rang6: 0,
-      rapport_rang6: 0,
-      gagnant_rang7: 0,
-      rapport_rang7: 0,
+      numero1: tirage.boule_1,
+      numero2: tirage.boule_2,
+      numero3: tirage.boule_3,
+      numero4: tirage.boule_4,
+      numero5: tirage.boule_5,
+      complementaire: tirage.numero_chance,
+      // DONNÉES DE GAINS RÉCUPÉRÉES DEPUIS L'API OPENDATASOFT
+      gagnant_rang1: tirage.nombre_de_gagnant_au_rang1 || 0,
+      rapport_rang1: tirage.rapport_du_rang1 || 0,
+      gagnant_rang2: tirage.nombre_de_gagnant_au_rang2 || 0,
+      rapport_rang2: tirage.rapport_du_rang2 || 0,
+      gagnant_rang3: tirage.nombre_de_gagnant_au_rang3 || 0,
+      rapport_rang3: tirage.rapport_du_rang3 || 0,
+      gagnant_rang4: tirage.nombre_de_gagnant_au_rang4 || 0,
+      rapport_rang4: tirage.rapport_du_rang4 || 0,
+      gagnant_rang5: tirage.nombre_de_gagnant_au_rang5 || 0,
+      rapport_rang5: tirage.rapport_du_rang5 || 0,
+      gagnant_rang6: tirage.nombre_de_gagnant_au_rang6 || 0,
+      rapport_rang6: tirage.rapport_du_rang6 || 0,
+      gagnant_rang7: tirage.nombre_de_gagnant_au_rang7 || 0,
+      rapport_rang7: tirage.rapport_du_rang7 || 0,
+      // Rangs 8 et 9 non disponibles dans l'API OpenDataSoft
       gagnant_rang8: 0,
       rapport_rang8: 0,
       gagnant_rang9: 0,
       rapport_rang9: 0,
       // Métadonnées d'import
       source: 'OpenDataSoft',
-      imported_at: new Date().toISOString()
+      imported_at: new Date().toISOString(),
+      // Distinguo 1er/2e tirage
+      tirage_type: tirage['1er_ou_2eme_tirage'] || 1
     }));
   }
   
@@ -151,25 +174,39 @@ export class OpenDataSoftSync {
    */
   private getLastLocalTirageDate(): string | null {
     try {
-      // Côté serveur, on utilise le fichier JSON existant
       if (typeof window === 'undefined') {
-        // Côté serveur - utiliser le fichier data/tirages.json
         const fs = require('fs');
         const path = require('path');
         
+        const jsonCompletPath = path.join(process.cwd(), 'data', 'Tirages_Loto_1976_2025_COMPLET.json');
         const tiragesPath = path.join(process.cwd(), 'data', 'tirages.json');
-        
+        const toIso = (raw: any): string => {
+          try {
+            if (!raw) return '1976-05-19';
+            const s = String(raw);
+            if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+            const d = new Date(raw);
+            if (Number.isFinite(d.getTime())) return d.toISOString().split('T')[0];
+            const digits = s.replace(/\D/g, '');
+            if (digits.length >= 8) return `${digits.slice(0,4)}-${digits.slice(4,6)}-${digits.slice(6,8)}`;
+            return '1976-05-19';
+          } catch { return '1976-05-19'; }
+        };
+
+        const dates: string[] = [];
         if (fs.existsSync(tiragesPath)) {
           const fileContent = fs.readFileSync(tiragesPath, 'utf8');
-          const tirages = JSON.parse(fileContent);
-          
-          if (tirages.length > 0) {
-            // Trier par date et prendre le plus récent
-            const sorted = tirages.sort((a: any, b: any) => 
-              new Date(b.date).getTime() - new Date(a.date).getTime()
-            );
-            return sorted[0].date;
-          }
+          const arr = JSON.parse(fileContent);
+          for (const t of arr) dates.push(toIso(t.date));
+        }
+        if (dates.length === 0 && fs.existsSync(jsonCompletPath)) {
+          const fileContent = fs.readFileSync(jsonCompletPath, 'utf8');
+          const jsonData = JSON.parse(fileContent);
+          for (const t of jsonData) dates.push(toIso(t.date_de_tirage));
+        }
+        if (dates.length > 0) {
+          dates.sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+          return dates[0];
         }
         
         return null;
@@ -200,22 +237,23 @@ export class OpenDataSoftSync {
   private async saveToLocalDatabase(newTirages: any[]): Promise<number> {
     try {
       if (typeof window === 'undefined') {
-        // Côté serveur - utiliser le fichier JSON
         const fs = require('fs');
         const path = require('path');
         
         const tiragesPath = path.join(process.cwd(), 'data', 'tirages.json');
         
-        // Lire les tirages existants
+        // Lire uniquement le fichier de récents
         let existingTirages: any[] = [];
+        const targetPath = tiragesPath;
         if (fs.existsSync(tiragesPath)) {
           const fileContent = fs.readFileSync(tiragesPath, 'utf8');
           existingTirages = JSON.parse(fileContent);
         }
         
-        // Éviter les doublons par date
-        const existingDates = new Set(existingTirages.map((t: any) => t.date));
-        const uniqueNewTirages = newTirages.filter(t => !existingDates.has(t.date));
+        // Éviter les doublons par (date + type)
+        const keyOf = (t: any) => `${(t.date || '').slice(0,10)}|${t.tirage_type || 1}`;
+        const existingKeys = new Set(existingTirages.map((t: any) => keyOf(t)));
+        const uniqueNewTirages = newTirages.filter(t => !existingKeys.has(keyOf(t)));
         
         if (uniqueNewTirages.length === 0) {
           console.log('ℹ️ Aucun nouveau tirage unique à ajouter');
@@ -226,10 +264,10 @@ export class OpenDataSoftSync {
         const allTirages = [...existingTirages, ...uniqueNewTirages];
         allTirages.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         
-        // Sauvegarder dans le fichier
-        fs.writeFileSync(tiragesPath, JSON.stringify(allTirages, null, 2));
+        // Sauvegarder dans le fichier de récents
+        fs.writeFileSync(targetPath, JSON.stringify(allTirages, null, 2));
         
-        console.log(`💾 ${uniqueNewTirages.length} nouveaux tirages sauvegardés dans ${tiragesPath}`);
+        console.log(`💾 ${uniqueNewTirages.length} nouveaux tirages sauvegardés dans ${targetPath}`);
         return uniqueNewTirages.length;
         
       } else {

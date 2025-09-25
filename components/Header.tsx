@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Star, RefreshCw, Database } from 'lucide-react';
 import LotoCountdown from './LotoCountdown';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 interface HeaderProps {
@@ -22,9 +22,25 @@ interface HeaderProps {
 
 export default function Header({ onRefresh, remainingCombinations = 0, remainingCombinationsSecondTirage = 0, onDataUpdate, chanceLevel = 0, lastDraw }: HeaderProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [syncState, setSyncState] = useState<'idle' | 'syncing' | 'up_to_date' | 'updated' | 'error'>('idle');
+  const [lastSync, setLastSync] = useState<string | null>(null);
+  const [importedCount, setImportedCount] = useState<number>(0);
+
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('last_opendatasoft_sync');
+        if (saved) setLastSync(saved);
+      }
+    } catch (_) {
+      // ignore
+    }
+  }, []);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
+    setSyncState('syncing');
+    setImportedCount(0);
     try {
       // Mise à jour automatique depuis OpenDataSoft
       const response = await fetch('/api/opendatasoft-sync', {
@@ -40,18 +56,29 @@ export default function Header({ onRefresh, remainingCombinations = 0, remaining
       if (result.success) {
         if (result.result.newTirages > 0) {
           toast.success(`🎯 ${result.result.newTirages} nouveaux tirages importés depuis OpenDataSoft !`);
+          setImportedCount(Number(result.result.newTirages) || 0);
+          setSyncState('updated');
+          const nowIso = new Date().toISOString();
+          setLastSync(nowIso);
+          try { if (typeof window !== 'undefined') localStorage.setItem('last_opendatasoft_sync', nowIso); } catch (_) {}
           // Rafraîchir les données et l'interface
           onRefresh?.();
           onDataUpdate?.();
         } else {
           toast.success('✅ Données déjà à jour');
+          setSyncState('up_to_date');
+          const nowIso = new Date().toISOString();
+          setLastSync(nowIso);
+          try { if (typeof window !== 'undefined') localStorage.setItem('last_opendatasoft_sync', nowIso); } catch (_) {}
         }
       } else {
         toast.error(result.error || 'Erreur lors de la mise à jour');
+        setSyncState('error');
       }
     } catch (error) {
       toast.error('❌ Erreur lors de la mise à jour depuis OpenDataSoft');
       console.error('Erreur refresh:', error);
+      setSyncState('error');
     } finally {
       setIsRefreshing(false);
     }
@@ -242,14 +269,32 @@ export default function Header({ onRefresh, remainingCombinations = 0, remaining
         >
           <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
             <span>Statut des données</span>
-            <span className="text-green-600 font-medium">✓ Synchronisé</span>
+            {(() => {
+              const formattedTime = lastSync ? new Date(lastSync).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : null;
+              let text = '✓ Synchronisé';
+              let cls = 'text-green-600';
+              if (syncState === 'syncing') {
+                text = 'Synchronisation en cours…';
+                cls = 'text-blue-600';
+              } else if (syncState === 'updated') {
+                text = `✓ ${importedCount} nouveaux tirages importés${formattedTime ? ` (${formattedTime})` : ''}`;
+                cls = 'text-green-600';
+              } else if (syncState === 'up_to_date') {
+                text = `✓ À jour${formattedTime ? ` (${formattedTime})` : ''}`;
+                cls = 'text-green-600';
+              } else if (syncState === 'error') {
+                text = '⚠️ Échec de synchro';
+                cls = 'text-red-600';
+              }
+              return <span className={`${cls} font-medium`}>{text}</span>;
+            })()}
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: '100%' }}
               transition={{ duration: 1, delay: 0.5 }}
-              className="bg-gradient-to-r from-primary-500 to-primary-600 h-2 rounded-full"
+              className={`bg-gradient-to-r from-primary-500 to-primary-600 h-2 rounded-full ${syncState === 'syncing' ? 'animate-pulse' : ''}`}
             />
           </div>
         </motion.div>

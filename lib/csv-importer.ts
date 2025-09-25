@@ -98,6 +98,16 @@ export class CSVImporter {
         return index !== -1 ? columns[index] : '';
       };
 
+      // CORRECTION : Vérifier le type de tirage pour éviter les doublons
+      if (filename.includes('mai 1976 a octobre 2008')) {
+        const tirageType = getColumn('1er_ou_2eme_tirage');
+        if (tirageType === '2') {
+          // Ignorer les anciens seconds tirages pour éviter la duplication
+          console.log(`🚫 Ancien second tirage ignoré: ${getColumn('date_de_tirage')}`);
+          return null;
+        }
+      }
+
       const dateStr = getColumn('date_de_tirage');
       if (!dateStr) return null;
 

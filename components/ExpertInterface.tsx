@@ -35,7 +35,6 @@ import TrendAnalysis from './TrendAnalysis';
 import AdvancedStatistics from './AdvancedStatistics';
 import UltraAdvancedStatistics from './UltraAdvancedStatistics';
 import OfficialRulesAnalysis from './OfficialRulesAnalysis';
-import DrawProximityAnalyzer from './DrawProximityAnalyzer';
 import EvenOddAnalysis from './EvenOddAnalysis';
 
 interface ExpertInterfaceProps {
@@ -50,7 +49,7 @@ type ExpertTab =
   | 'intelligent-analysis' | 'strategy-config' 
   | 'simple-generation' | 'advanced-generation'
   | 'combination-tester' | 'retroactive-analysis'
-  | 'frequency' | 'patterns' | 'trends' | 'advanced-stats' | 'ultra-stats' | 'rules' | 'proximity' | 'even-odd'
+  | 'frequency' | 'patterns' | 'trends' | 'advanced-stats' | 'ultra-stats' | 'rules' | 'even-odd'
   | 'saved-grids' | 'auto-sync';
 
 export default function ExpertInterface({ 
@@ -103,7 +102,6 @@ export default function ExpertInterface({
         { id: 'advanced-stats' as ExpertTab, label: '🎯 Stats Avancées', icon: Target },
         { id: 'ultra-stats' as ExpertTab, label: '🚀 Ultra Stats', icon: Brain },
         { id: 'rules' as ExpertTab, label: '📋 Règles', icon: Trophy },
-        { id: 'proximity' as ExpertTab, label: '🎯 Proximité', icon: Target },
         { id: 'even-odd' as ExpertTab, label: '⚖️ Pair/Impair', icon: Calculator }
       ]
     },
@@ -168,8 +166,6 @@ export default function ExpertInterface({
         return <UltraAdvancedStatistics analysisPeriod={globalAnalysisPeriod as any} />;
       case 'rules':
         return <OfficialRulesAnalysis />;
-      case 'proximity':
-        return <DrawProximityAnalyzer />;
       case 'even-odd':
         return <EvenOddAnalysis />;
         
