@@ -25,7 +25,6 @@ import {
 import SimpleUnifiedAnalysis from './SimpleUnifiedAnalysis';
 import ThreeWindowInterface from './ThreeWindowInterface';
 import EnhancedGridGenerator from './EnhancedGridGenerator';
-import RetroactiveAnalysis from './RetroactiveAnalysis';
 import SavedGridsManager from './SavedGridsManager';
 import OpenDataSoftSync from './OpenDataSoftSync';
 import CombinationTester from './CombinationTester';
@@ -48,7 +47,7 @@ type ExpertCategory = 'analysis' | 'generation' | 'testing' | 'statistics' | 'ma
 type ExpertTab = 
   | 'intelligent-analysis' | 'strategy-config' 
   | 'simple-generation' | 'advanced-generation'
-  | 'combination-tester' | 'retroactive-analysis'
+  | 'combination-tester'
   | 'frequency' | 'patterns' | 'trends' | 'advanced-stats' | 'ultra-stats' | 'rules' | 'even-odd'
   | 'saved-grids' | 'auto-sync';
 
@@ -87,8 +86,7 @@ export default function ExpertInterface({
       label: '🧪 Tests & Validation',
       icon: FlaskConical,
       tabs: [
-        { id: 'combination-tester' as ExpertTab, label: '🧪 Testeur', icon: FlaskConical },
-        { id: 'retroactive-analysis' as ExpertTab, label: '🔄 Rétroactif', icon: RefreshCw }
+        { id: 'combination-tester' as ExpertTab, label: '🧪 Testeur', icon: FlaskConical }
       ]
     },
     {
@@ -150,8 +148,6 @@ export default function ExpertInterface({
       // Tests
       case 'combination-tester':
         return <CombinationTester />;
-      case 'retroactive-analysis':
-        return <RetroactiveAnalysis analysisPeriod={globalAnalysisPeriod} />;
         
       // Statistiques
       case 'frequency':
