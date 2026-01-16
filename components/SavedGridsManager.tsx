@@ -566,7 +566,7 @@ export default function SavedGridsManager() {
     [1,2,3,4,5,6,7].forEach(r => {
       ws1b.addRow({ label: rankToLabel(r), count: backtestSummary.winsByRank[r] || 0 });
     });
-    ws1b.eachRow((row, idx) => { if (idx>1) row.eachCell((c: any) => c.border = headerBorder); });
+    ws1b.eachRow((row: any, idx: number) => { if (idx>1) row.eachCell((c: any) => c.border = headerBorder); });
 
     // Feuille Détails
     const ws2 = wb.addWorksheet('Détails');
