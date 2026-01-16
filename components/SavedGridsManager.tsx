@@ -553,8 +553,8 @@ export default function SavedGridsManager() {
       { header: 'ROI %', key: 'roi', width: 10 }
     ];
     ws1.addRow({ session: backtestSession.name, periode: backtestPeriod, tri: sortKey, draws: backtestSummary.drawsTested, wins: backtestSummary.totalWinners, gains: backtestSummary.totalGains, invest: backtestSummary.totalInvestment, net: backtestSummary.netResult, roi: backtestSummary.roiPct });
-    ws1.getRow(1).eachCell(c => { c.fill = headerFill; c.border = headerBorder; c.font = { bold: true }; });
-    ws1.getRow(2).eachCell(c => { c.border = headerBorder; });
+    ws1.getRow(1).eachCell((c: any) => { c.fill = headerFill; c.border = headerBorder; c.font = { bold: true }; });
+    ws1.getRow(2).eachCell((c: any) => { c.border = headerBorder; });
 
     // Répartition
     const ws1b = wb.addWorksheet('Répartition');
@@ -562,11 +562,11 @@ export default function SavedGridsManager() {
       { header: 'Résultat', key: 'label', width: 22 },
       { header: 'Nombre', key: 'count', width: 12 },
     ];
-    ws1b.getRow(1).eachCell(c => { c.fill = headerFill; c.border = headerBorder; c.font = { bold: true }; });
+    ws1b.getRow(1).eachCell((c: any) => { c.fill = headerFill; c.border = headerBorder; c.font = { bold: true }; });
     [1,2,3,4,5,6,7].forEach(r => {
       ws1b.addRow({ label: rankToLabel(r), count: backtestSummary.winsByRank[r] || 0 });
     });
-    ws1b.eachRow((row, idx) => { if (idx>1) row.eachCell(c => c.border = headerBorder); });
+    ws1b.eachRow((row, idx) => { if (idx>1) row.eachCell((c: any) => c.border = headerBorder); });
 
     // Feuille Détails
     const ws2 = wb.addWorksheet('Détails');
@@ -585,7 +585,7 @@ export default function SavedGridsManager() {
       { header: '5 bons', key: 'r2', width: 10 },
       { header: '5 bons + chance', key: 'r1', width: 16 },
     ];
-    ws2.getRow(1).eachCell(c => { c.fill = headerFill; c.border = headerBorder; c.font = { bold: true }; });
+    ws2.getRow(1).eachCell((c: any) => { c.fill = headerFill; c.border = headerBorder; c.font = { bold: true }; });
     sortedBacktestResults.forEach((r, idx) => {
       const tirage = r.numbers.join('-') + (typeof r.complementary === 'number' ? `+${r.complementary}` : '');
       ws2.addRow({
