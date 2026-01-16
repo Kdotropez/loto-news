@@ -604,7 +604,7 @@ export default function SavedGridsManager() {
         r1: r.winsByRank[1] || 0,
       });
     });
-    ws2.eachRow((row, idx) => { if (idx>1) row.eachCell(c => c.border = headerBorder); });
+    ws2.eachRow((row: any, idx: number) => { if (idx>1) row.eachCell((c: any) => c.border = headerBorder); });
 
     // Générer et télécharger
     const blob = new Blob([await wb.xlsx.writeBuffer()], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
