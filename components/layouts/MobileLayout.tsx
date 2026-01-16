@@ -72,7 +72,10 @@ export default function MobileLayout({
       />
       
       {/* Contenu principal */}
-      <main className="flex-1 overflow-auto pb-20">
+      <main
+        className="flex-1 overflow-auto"
+        style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))' }}
+      >
         <div className="px-3 py-4">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -86,7 +89,10 @@ export default function MobileLayout({
       
       {/* Actions rapides flottantes */}
       {showQuickActions && quickActions.length > 0 && (
-        <div className="fixed bottom-24 right-4 z-40">
+        <div
+          className="fixed right-4 z-40"
+          style={{ bottom: 'calc(6rem + env(safe-area-inset-bottom))' }}
+        >
           <AnimatePresence>
             {showQuickActionsPanel && (
               <motion.div

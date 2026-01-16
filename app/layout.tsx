@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Sora } from 'next/font/google'
 import './globals.css'
+import './tokens.css'
 import './complexity-styles.css'
 import './complexity-selector.css'
 import './beginner-interface.css'
@@ -15,6 +16,7 @@ import './force-colors.css'
 import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ subsets: ['latin'] })
+const sora = Sora({ subsets: ['latin'], weight: ['400','600','700'], variable: '--font-sora' })
 
 export const metadata: Metadata = {
   title: 'Kdo Loto Gagnant',
@@ -28,7 +30,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body className={inter.className}>
+      <body className={`${inter.className} ${sora.variable}`}>
         {children}
         <Toaster 
           position="top-right"

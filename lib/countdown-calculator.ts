@@ -16,7 +16,7 @@ export interface NextDrawInfo {
 export class CountdownCalculator {
   
   /**
-   * Calcule le prochain tirage Loto (Mercredi ou Samedi à 20h15)
+   * Calcule le prochain tirage Loto (Mercredi ou Samedi à 20h30)
    */
   public getNextDrawInfo(): NextDrawInfo {
     const now = new Date();
@@ -37,7 +37,7 @@ export class CountdownCalculator {
    * Calcule la date du prochain tirage
    */
   private calculateNextDrawDate(now: Date): Date {
-    const drawTime = { hours: 20, minutes: 15, seconds: 0 }; // 20h15
+    const drawTime = { hours: 20, minutes: 30, seconds: 0 }; // 20h30
     
     // Jours de tirage : 3 = Mercredi, 6 = Samedi
     const drawDays = [3, 6];
@@ -141,7 +141,7 @@ export class CountdownCalculator {
       } else if (drawInfo.timeRemaining.hours < 3) {
         return "⏰ Tirage ce soir !";
       } else {
-        return `📅 Tirage aujourd'hui à 20h15`;
+        return `📅 Tirage aujourd'hui à 20h30`;
       }
     }
     

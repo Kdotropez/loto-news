@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { openDataSoftSync } from '@/lib/opendatasoft-sync';
 import { 
   RefreshCw, 
   Database, 
@@ -67,30 +68,20 @@ export default function OpenDataSoftSync() {
 
   const handleSync = async () => {
     setIsSyncing(true);
-    toast.loading('Synchronisation en cours...');
-    
+    toast.loading('Synchronisation locale en cours...');
     try {
-      const response = await fetch('/api/opendatasoft-sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'sync' })
-      });
-      
-      const result = await response.json();
-      
+      const result = await openDataSoftSync.syncWithLocalDatabase();
       if (result.success) {
-        toast.success(`✅ ${result.result.newTirages} nouveaux tirages synchronisés !`);
+        toast.success(`✅ ${result.newTirages} nouveaux tirages (local)`);
         setLastSync(new Date().toISOString());
         localStorage.setItem('last_opendatasoft_sync', new Date().toISOString());
-        
-        // Recharger les stats
         await loadAPIStats();
       } else {
-        toast.error(`❌ Erreur: ${result.error}`);
+        toast.error(`❌ Erreur: ${result.error || 'synchronisation locale'}`);
       }
     } catch (error) {
-      toast.error('❌ Erreur de synchronisation');
-      console.error('Erreur sync:', error);
+      toast.error('❌ Erreur de synchronisation locale');
+      console.error('Erreur sync (local):', error);
     } finally {
       setIsSyncing(false);
     }

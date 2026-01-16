@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 
 // Composants responsive
 import ResponsiveRouter from '@/components/ResponsiveRouter';
+import dynamic from 'next/dynamic';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 
 // Composants de complexité
@@ -25,6 +26,12 @@ import { complexityManager, ComplexityLevel } from '@/lib/complexity-manager';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import HotColdPeriodSelector from '@/components/HotColdPeriodSelector';
 import PeriodSelectionModal from '@/components/PeriodSelectionModal';
+const KPIBanner = dynamic(() => import('@/components/KPIBanner'), { ssr: false, loading: () => <div className="rounded-xl border p-4 text-sm text-slate-600">Chargement…</div> });
+const FrequencyTrends = dynamic(() => import('@/components/stats/FrequencyTrends'), { ssr: false, loading: () => <div className="rounded-xl border p-4 text-sm text-slate-600">Chargement des fréquences…</div> });
+const RecencyStreaks = dynamic(() => import('@/components/stats/RecencyStreaks'), { ssr: false, loading: () => <div className="rounded-xl border p-4 text-sm text-slate-600">Calcul des récences…</div> });
+const CooccurrencePairs = dynamic(() => import('@/components/stats/CooccurrencePairs'), { ssr: false, loading: () => <div className="rounded-xl border p-4 text-sm text-slate-600">Calcul cooccurrence…</div> });
+const PatternsOverview = dynamic(() => import('@/components/stats/PatternsOverview'), { ssr: false, loading: () => <div className="rounded-xl border p-4 text-sm text-slate-600">Calcul des patterns…</div> });
+const EVPanel = dynamic(() => import('@/components/stats/EVPanel'), { ssr: false, loading: () => <div className="rounded-xl border p-4 text-sm text-slate-600">Calcul EV…</div> });
 
 export default function ResponsiveHome() {
   // États principaux
@@ -46,7 +53,18 @@ export default function ResponsiveHome() {
   const [activeTab, setActiveTab] = useState('dashboard');
   
   // Hook de détection d'appareil
-  const { deviceType, isMobile, isTablet, isDesktop } = useDeviceDetection();
+  const { deviceType, isMobile, isTablet, isDesktop, isPortrait } = useDeviceDetection();
+
+  // Positionner le bouton "mode" pour éviter les chevauchements :
+  // - mobile: à gauche (sinon conflit avec les "quick actions" en bas à droite)
+  // - tablette portrait: en bas à droite (évite le header sticky)
+  // - sinon: en haut à droite
+  const modeButtonPositionClass =
+    isMobile
+      ? 'fixed bottom-24 left-4 z-50'
+      : isTablet && isPortrait
+        ? 'fixed bottom-24 right-4 z-50'
+        : 'fixed top-4 right-4 z-50';
   
   // État des données
   const [dataStatus, setDataStatus] = useState<{
@@ -435,8 +453,17 @@ export default function ResponsiveHome() {
       }}
     >
       <div>
+        {/* Bandeau KPI en haut (paysage) */}
+        <div className="mb-6">
+          <KPIBanner
+            totalTirages={dataStatus.totalTirages}
+            lastUpdate={dataStatus.lastUpdate}
+            averagePerMonth={undefined}
+          />
+        </div>
+
         {/* Bouton de changement de mode */}
-        <div className="fixed top-4 right-4 z-50">
+        <div className={modeButtonPositionClass}>
           <button
             onClick={() => setShowComplexitySelector(true)}
             className={`px-4 py-2 rounded-lg shadow-lg font-semibold transition-all ${
@@ -467,6 +494,33 @@ export default function ResponsiveHome() {
 
         {/* Contenu principal selon le niveau de complexité */}
         {renderContent()}
+
+        {/* Fréquences + tendances (paysage) */}
+        <div className="mt-8">
+          <FrequencyTrends period={globalAnalysisPeriod as any} />
+        </div>
+
+        {/* Récence + séries */}
+        <div className="mt-8">
+          <RecencyStreaks period={globalAnalysisPeriod as any} />
+        </div>
+
+        {/* Cooccurrence des paires */}
+        <div className="mt-8">
+          <CooccurrencePairs period={globalAnalysisPeriod as any} />
+        </div>
+
+        {/* Patterns */}
+        <div className="mt-8">
+          <PatternsOverview period={globalAnalysisPeriod as any} />
+        </div>
+
+        {/* EV panel */}
+        <div className="mt-8">
+          <EVPanel />
+        </div>
+
+        {/* Le générateur 3/5 est réservé à l'onglet Générateur */}
       </div>
 
       {/* Modal de sélection de période */}

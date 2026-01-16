@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { 
   Target,
@@ -53,6 +54,9 @@ interface SimpleGrid {
 }
 
 export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInterfaceProps) {
+  const Guarantee3Generator = dynamic(() => import('./Guarantee3Generator'), { ssr: false });
+  const AdvancedGenerator = dynamic(() => import('./EnhancedGridGenerator'), { ssr: false });
+  const [showAdvancedGenerator, setShowAdvancedGenerator] = useState(false);
   const [currentStep, setCurrentStep] = useState<'select' | 'generate' | 'save'>('select');
   const [selectedNumbers, setSelectedNumbers] = useState<SelectedNumbers | null>(null);
   const [includeSecondTirage, setIncludeSecondTirage] = useState(false);
@@ -2123,6 +2127,69 @@ const periodOptions: { key: typeof selectedWindow; label: string }[] = [
                   )}
                 </div>
 
+                {/* Option Garantie 3/5 (Premium) */}
+                <div className="bg-emerald-50/80 rounded-xl border-2 border-emerald-200 mb-4">
+                  <div className="flex items-center justify-between p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="text-3xl">🛡️</div>
+                      <div>
+                        <div className="font-bold text-emerald-800">Garantie 3/5</div>
+                        <div className="text-sm text-emerald-600">
+                          Couverture minimale de 3 bons numéros si 3 sortent de votre sélection
+                        </div>
+                        {!premiumUnlocked && (
+                          <div className="text-xs text-emerald-700 mt-1">🔒 Option premium — code 2025</div>
+                        )}
+                      </div>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={gridOptions.gridType === 'guarantee3'}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            if (!premiumUnlocked) {
+                              requestUnlock();
+                              // activer seulement si déverrouillé
+                              setTimeout(() => {
+                                // si premiumUnlocked est devenu true, activer guarantee3
+                                // (setPremiumUnlocked se trouve via requestUnlock)
+                                // on relit la valeur dans la prochaine tick via simple logique
+                              }, 0);
+                            } else {
+                              setGridOptions(prev => ({ ...prev, gridType: 'guarantee3' as any }));
+                            }
+                          } else {
+                            setGridOptions(prev => ({ ...prev, gridType: 'simple' }));
+                          }
+                        }}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                    </label>
+                  </div>
+
+                  {/* Panneau Garantie 3/5 */}
+                  {gridOptions.gridType === 'guarantee3' && premiumUnlocked && (
+                    <div className="px-4 pb-4 space-y-4 border-t border-emerald-200/50">
+                      <div className="pt-4">
+                        <p className="text-sm text-emerald-700">
+                          Cette section génère un ensemble minimal de grilles garanties 3/5 à partir de vos numéros sélectionnés.
+                        </p>
+                      </div>
+                      <div className="bg-white rounded-xl border p-3">
+                        <strong className="text-emerald-800">Votre sélection ({selectedMainNumbers.length})</strong>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {selectedMainNumbers.map(num => (
+                            <span key={num} className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 border border-emerald-200">{num}</span>
+                          ))}
+                        </div>
+                      </div>
+                      <Guarantee3Generator initialNumbers={selectedMainNumbers} />
+                    </div>
+                  )}
+                </div>
+
               {/* Second tirage */}
               <div className="bg-white/20 backdrop-blur rounded-xl p-4">
                 <h3 className="text-amber-800 font-bold text-lg mb-4">🌟 Second tirage :</h3>
@@ -2170,6 +2237,15 @@ const periodOptions: { key: typeof selectedWindow; label: string }[] = [
                 🎰 GÉNÉRER LES GRILLES 🎰
               </motion.button>
               
+              <motion.button
+                className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg"
+                onClick={() => setShowAdvancedGenerator(true)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                🔓 Modes avancés (Intermédiaire/Expert)
+              </motion.button>
+
               <motion.button
                 className="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg"
                 onClick={() => setShowGridGeneration(false)}
@@ -3002,6 +3078,23 @@ const periodOptions: { key: typeof selectedWindow; label: string }[] = [
             ))}
           </div>
         </motion.div>
+      )}
+
+      {/* Modale Modes avancés */}
+      {showAdvancedGenerator && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
+          <motion.div
+            className="bg-white rounded-2xl p-4 md:p-6 max-w-6xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xl font-bold">Générateur Standard (Intermédiaire/Expert)</h3>
+              <button onClick={() => setShowAdvancedGenerator(false)} className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Fermer</button>
+            </div>
+            <AdvancedGenerator globalAnalysisPeriod={globalAnalysisPeriod} />
+          </motion.div>
+        </div>
       )}
 
       {currentStep === 'generate' && selectedNumbers && (

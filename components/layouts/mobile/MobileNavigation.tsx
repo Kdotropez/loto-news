@@ -28,7 +28,10 @@ export default function MobileNavigation({
   onTabChange
 }: MobileNavigationProps) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+    <div
+      className="mobile-bottom-nav fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
       <div className="grid grid-cols-4 gap-1 p-2">
         {items.slice(0, 4).map((item) => {
           const isActive = activeTab === item.id;
@@ -38,7 +41,7 @@ export default function MobileNavigation({
               key={item.id}
               whileTap={{ scale: 0.95 }}
               onClick={() => onTabChange?.(item.id)}
-              className={`flex flex-col items-center justify-center p-3 rounded-lg transition-colors ${
+              className={`relative flex flex-col items-center justify-center p-3 rounded-lg transition-colors ${
                 isActive 
                   ? 'bg-blue-50 text-blue-600' 
                   : 'text-gray-600 hover:bg-gray-50'

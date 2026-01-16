@@ -22,6 +22,8 @@ import {
   Info
 } from 'lucide-react';
 import OptimisateurGrillesGaranties from './OptimisateurGrillesGaranties';
+import dynamic from 'next/dynamic';
+const Guarantee3Generator = dynamic(() => import('./Guarantee3Generator'), { ssr: false });
 
 interface SelectedNumbers {
   numbers: number[];
@@ -623,6 +625,11 @@ export default function EnhancedGridGenerator({ globalAnalysisPeriod }: Enhanced
           )}
         </div>
         
+        {/* Générateur Garantie 3/5 - visible uniquement dans le Générateur Standard */}
+        <div className="mt-6">
+          <Guarantee3Generator initialNumbers={availableSources[activeSource]?.numbers || []} />
+        </div>
+
         {/* Informations sur la configuration */}
         {gridType === 'multiple' && currentNumbers && (
           <div className="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200">

@@ -318,8 +318,12 @@ class DataStorage {
       return all.filter(t => t.date >= startStr);
     };
     switch (period) {
+      case 'last1':
+        return all.slice(0, 1);
       case 'last20':
         return all.slice(0, 20);
+      case 'last50':
+        return all.slice(0, 50);
       case 'week':
         return byDays(7);
       case 'month':

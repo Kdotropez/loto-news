@@ -5,6 +5,17 @@
 
 /* === STYLES DE BASE === */
 
+/* === SAFE AREA (iOS) === */
+/* Utilisé pour éviter que les éléments fixed (nav bas, boutons) soient masqués par l'encoche / barre home. */
+:root {
+  --safe-area-top: env(safe-area-inset-top);
+  --safe-area-bottom: env(safe-area-inset-bottom);
+}
+
+.mobile-bottom-nav {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 /* === STYLES BOULES LOTO === */
 .loto-ball {
   display: inline-flex;

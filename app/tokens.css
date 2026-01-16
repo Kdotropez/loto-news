@@ -1,0 +1,71 @@
+/* Design Tokens - Loto de Rêve */
+:root {
+  /* Couleurs de base */
+  --color-bg: #f8fafc;          /* slate-50 */
+  --color-text: #0f172a;        /* slate-900 */
+  --color-muted: #475569;       /* slate-600 */
+
+  /* Palette primaire (émeraude/cyan/bleu) */
+  --color-primary: #22c55e;     /* emerald-500 */
+  --color-primary-600: #16a34a;
+  --color-info: #0ea5e9;        /* sky-500 */
+  --color-info-600: #0284c7;
+  --color-brand: #3b82f6;       /* blue-500 */
+  --color-brand-600: #2563eb;
+
+  /* Accent or (jackpot) */
+  --color-accent: #f59e0b;      /* amber-500 */
+  --color-accent-600: #d97706;
+
+  /* États */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgba(14, 165, 233, 0.35); /* sky-500 */
+
+  /* Rayons */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Ombres */
+  --shadow-sm: 0 1px 2px rgba(2, 6, 23, 0.06);
+  --shadow-md: 0 6px 16px rgba(2, 6, 23, 0.12);
+  --shadow-lg: 0 12px 28px rgba(2, 6, 23, 0.18);
+
+  /* Motion */
+  --motion-fast: 120ms;
+  --motion-normal: 200ms;
+  --motion-slow: 320ms;
+
+  /* Gradients */
+  --gradient-mobile: linear-gradient(90deg, #34d399, #059669);
+  --gradient-tablet: linear-gradient(90deg, #38bdf8, #0ea5e9);
+  --gradient-desktop: linear-gradient(90deg, #fb923c, #f97316);
+}
+
+[data-theme="dark"] {
+  --color-bg: #0b1220;          /* slate-950 approx */
+  --color-text: #e2e8f0;        /* slate-200 */
+  --color-muted: #94a3b8;       /* slate-400 */
+}
+
+/* Helpers */
+.token-card {
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  background: #fff;
+}
+
+.token-focusable:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+
+
+

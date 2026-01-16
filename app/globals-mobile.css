@@ -1,2 +1,16 @@
-/* CSS Mobile Simplifié - Pas de conflits */
+/* === STYLES MOBILE (≤767px) === */
+/* Objectif: éviter les chevauchements (safe-area) et les scrollbars horizontales */
+
+@media (max-width: 767px) {
+  body {
+    overflow-x: hidden;
+  }
+}
+
+/* Safe-area (iOS) pour les éléments fixed en bas (ex: navigation) */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .mobile-bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
 
