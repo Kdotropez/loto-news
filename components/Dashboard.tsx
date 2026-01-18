@@ -37,15 +37,6 @@ interface DashboardData {
     numerosFroids: Array<{ numero: number; frequence: number }>;
     moyenneTiragesParMois: number;
   };
-  recentTirages: Array<{
-    date: string;
-    boule_1: number;
-    boule_2: number;
-    boule_3: number;
-    boule_4: number;
-    boule_5: number;
-    numero_chance: number;
-  }>;
   frequencyData: {
     frequencies: Array<{
       numero: number;
@@ -69,6 +60,7 @@ interface DashboardData {
 export default function Dashboard({ dataStatus, analysisPeriod, onAnalysisPeriodChange }: DashboardProps) {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showManualInput, setShowManualInput] = useState(false);
 
   useEffect(() => {
     loadDashboardData();
@@ -80,10 +72,6 @@ export default function Dashboard({ dataStatus, analysisPeriod, onAnalysisPeriod
       // Charger les données du résumé
       const summaryResponse = await fetch('/api/statistics?type=summary');
       const summaryResult = await summaryResponse.json();
-
-      // Charger les tirages récents
-      const tiragesResponse = await fetch('/api/tirages?limit=10');
-      const tiragesResult = await tiragesResponse.json();
 
       // Charger l'analyse de fréquence des numéros principaux avec la période sélectionnée
       const frequencyResponse = await fetch(`/api/analysis?type=frequency&period=${analysisPeriod}`);
@@ -103,13 +91,12 @@ export default function Dashboard({ dataStatus, analysisPeriod, onAnalysisPeriod
           numerosFroids: [],
           moyenneTiragesParMois: 0
         },
-        recentTirages: tiragesResult.success && Array.isArray(tiragesResult.data) ? tiragesResult.data : [],
         frequencyData: frequencyResult.success ? frequencyResult.data : { frequencies: [] },
         complementaryData: complementaryResult.success ? complementaryResult.data : { frequencies: [] }
       });
 
       // Afficher un message d'erreur seulement si toutes les APIs échouent
-      if (!summaryResult.success && !tiragesResult.success && !frequencyResult.success) {
+      if (!summaryResult.success && !frequencyResult.success && !complementaryResult.success) {
         toast.error('Erreur lors du chargement des données');
       }
     } catch (error) {
@@ -138,11 +125,11 @@ export default function Dashboard({ dataStatus, analysisPeriod, onAnalysisPeriod
     );
   }
 
-  const { summary, recentTirages, frequencyData, complementaryData } = dashboardData;
+  const { summary, frequencyData, complementaryData } = dashboardData;
 
   // Préparer les données pour les graphiques - Top 49 des numéros principaux
   const frequencies = Array.isArray(frequencyData?.frequencies) ? frequencyData.frequencies : [];
-  const topNumbers = frequencies.slice(0, 49);
+  const topNumbers = frequencies.slice(0, 20);
   const chartData = topNumbers.map(item => ({
     numero: item.numero,
     frequence: item.frequency,
@@ -156,6 +143,19 @@ export default function Dashboard({ dataStatus, analysisPeriod, onAnalysisPeriod
     frequence: item.frequency,
     pourcentage: item.percentage
   }));
+
+  const freshness = (() => {
+    if (!summary.derniereMiseAJour) {
+      return { label: 'Données inconnues', cls: 'text-rose-700 bg-rose-50' };
+    }
+    const now = new Date();
+    const last = new Date(summary.derniereMiseAJour);
+    const diffDays = Math.floor((now.getTime() - last.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays <= 4) {
+      return { label: `Données OK (J-${diffDays})`, cls: 'text-emerald-700 bg-emerald-50' };
+    }
+    return { label: `Données à actualiser (J-${diffDays})`, cls: 'text-amber-700 bg-amber-50' };
+  })();
 
   const StatCard = ({ title, value, icon: Icon, color, subtitle }: {
     title: string;
@@ -193,9 +193,15 @@ export default function Dashboard({ dataStatus, analysisPeriod, onAnalysisPeriod
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Tableau de bord Kdo Loto Gagnant
         </h1>
-        <p className="text-gray-600">
-          Analysez les tendances et optimisez vos chances de gain
-        </p>
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-gray-600">
+            Analysez les tendances et optimisez vos chances de gain
+          </p>
+          <span className={`text-xs font-semibold px-3 py-1 rounded-full ${freshness.cls}`}>
+            {freshness.label}
+          </span>
+          <span className="pill pill-info">Fenêtre: {analysisPeriod}</span>
+        </div>
       </motion.div>
 
       {/* Note : Le sélecteur de période a été déplacé en haut de l'interface */}
@@ -208,17 +214,27 @@ export default function Dashboard({ dataStatus, analysisPeriod, onAnalysisPeriod
         className="max-w-4xl mx-auto"
       >
         <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border-2 border-green-200 shadow-lg">
-          <div className="text-center mb-4">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              📝 Saisie manuelle des tirages
-            </h2>
-            <p className="text-gray-600">
-              Ajoutez manuellement les derniers tirages manquants à la base de données
-            </p>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                📝 Saisie manuelle des tirages
+              </h2>
+              <p className="text-gray-600">
+                Ajoutez les tirages manquants si besoin
+              </p>
+            </div>
+            <button
+              onClick={() => setShowManualInput(!showManualInput)}
+              className="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+            >
+              {showManualInput ? 'Masquer' : 'Ajouter un tirage'}
+            </button>
           </div>
-          <div className="flex justify-center">
-            <ManualTirageInput onTirageAdded={loadDashboardData} />
-          </div>
+          {showManualInput && (
+            <div className="flex justify-center">
+              <ManualTirageInput onTirageAdded={loadDashboardData} />
+            </div>
+          )}
         </div>
       </motion.div>
 
@@ -265,7 +281,7 @@ export default function Dashboard({ dataStatus, analysisPeriod, onAnalysisPeriod
         >
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Zap className="w-5 h-5 text-loto-red" />
-            Top 49 des numéros les plus fréquents
+            Top 20 des numéros les plus fréquents
           </h3>
           <ResponsiveContainer width="100%" height={500}>
             <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>

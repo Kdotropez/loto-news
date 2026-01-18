@@ -8,9 +8,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Star, RefreshCw, Settings, Bell, User, Search,
+  Star, RefreshCw, Trash2,
   TrendingUp, DollarSign, Target, Award
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface DesktopHeaderProps {
   remainingCombinations?: number;
@@ -33,8 +34,6 @@ export default function DesktopHeader({
   chanceLevel = 0
 }: DesktopHeaderProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -45,14 +44,29 @@ export default function DesktopHeader({
     }
   };
 
+  const handleResetLocalCache = () => {
+    if (typeof window === 'undefined') return;
+    const confirmed = window.confirm('Réinitialiser le cache local des tirages ?');
+    if (!confirmed) return;
+    try {
+      localStorage.removeItem('loto_tirages');
+      localStorage.removeItem('last_opendatasoft_sync');
+      toast.success('Cache local réinitialisé');
+      onDataUpdate?.();
+    } catch (error) {
+      console.error('Erreur reset cache:', error);
+      toast.error('Impossible de réinitialiser le cache');
+    }
+  };
+
   return (
     <motion.header
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50"
+      className="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-50"
     >
-      <div className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
+      <div className="container mx-auto px-4 lg:px-6 py-3 lg:py-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           
           {/* Logo et titre */}
           <motion.div
@@ -62,16 +76,16 @@ export default function DesktopHeader({
             className="flex items-center gap-4"
           >
             <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center shadow-lg">
-                <Star className="w-7 h-7 text-white" />
+              <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center shadow-lg ring-1 ring-white/70">
+                <Star className="w-5 h-5 lg:w-7 lg:h-7 text-white" />
               </div>
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-loto-red rounded-full animate-pulse"></div>
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
+              <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
                 Kdo Loto Gagnant
               </h1>
-              <p className="text-gray-600">
+              <p className="text-sm lg:text-base text-gray-600">
                 Optimisez vos chances au Loto National
               </p>
             </div>
@@ -82,7 +96,7 @@ export default function DesktopHeader({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="hidden lg:flex items-center gap-8"
+            className="hidden xl:flex items-center gap-8"
           >
             {/* Combinaisons restantes */}
             <div className="text-center">
@@ -136,58 +150,28 @@ export default function DesktopHeader({
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="flex items-center gap-4"
+            className="flex items-center gap-2 lg:gap-4 shrink-0"
           >
-            {/* Barre de recherche */}
-            <div className="hidden xl:flex items-center bg-gray-100 rounded-lg px-4 py-2 w-64">
-              <Search className="w-4 h-4 text-gray-400 mr-2" />
-              <input
-                type="text"
-                placeholder="Rechercher..."
-                className="bg-transparent flex-1 text-sm focus:outline-none"
-              />
-            </div>
-
             {/* Actualiser */}
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+              className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors shadow-sm disabled:opacity-50"
               title="Actualiser les données"
             >
-              <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 lg:w-5 lg:h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <span className="hidden xl:inline text-sm font-semibold">Actualiser</span>
             </button>
 
-            {/* Notifications */}
-            <div className="relative">
-              <button
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors relative"
-                title="Notifications"
-              >
-                <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-              </button>
-            </div>
-
-            {/* Paramètres */}
+            {/* Réinitialiser cache */}
             <button
-              className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
-              title="Paramètres"
+              onClick={handleResetLocalCache}
+              className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors shadow-sm"
+              title="Réinitialiser le cache local"
             >
-              <Settings className="w-5 h-5" />
+              <Trash2 className="w-4 h-4 lg:w-5 lg:h-5" />
+              <span className="hidden xl:inline text-sm font-semibold">Réinitialiser cache</span>
             </button>
-
-            {/* Profil utilisateur */}
-            <div className="relative">
-              <button
-                onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center gap-2 p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
-              >
-                <User className="w-5 h-5" />
-                <span className="hidden lg:block text-sm font-medium">Utilisateur</span>
-              </button>
-            </div>
           </motion.div>
         </div>
 

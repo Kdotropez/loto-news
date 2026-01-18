@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = request.nextUrl;
     const type = searchParams.get('type');
     const windowParam = searchParams.get('window') || undefined;
+    const periodParam = searchParams.get('period') || windowParam || 'last20';
 
     let result;
 
@@ -46,29 +47,58 @@ export async function GET(request: NextRequest) {
         break;
       }
       
-      case 'advanced':
-        // Statistiques avancées simulées
+      case 'advanced': {
+        const tirages = dataStorage.getTiragesForPeriod(periodParam);
+        const totalTirages = tirages.length;
+        const statsNumeros = dataStorage.getStatistiquesNumeros(periodParam);
+
+        const hotNumbers = statsNumeros.slice(0, 10).map(n => ({
+          numero: n.numero,
+          frequency: n.frequence,
+          lastAppearance: n.derniere_sortie || null
+        }));
+        const coldNumbers = [...statsNumeros].slice(-10).map(n => ({
+          numero: n.numero,
+          frequency: n.frequence,
+          lastAppearance: n.derniere_sortie || null
+        }));
+
+        const frequencyData = statsNumeros.slice(0, 12).map(n => ({
+          numero: n.numero,
+          frequency: n.frequence
+        }));
+
+        const sumBuckets = { faible: 0, optimale: 0, elevee: 0 };
+        tirages.forEach(t => {
+          const nums = [t.numero1, t.numero2, t.numero3, t.numero4, t.numero5].filter(n => typeof n === 'number') as number[];
+          const sum = nums.reduce((acc, v) => acc + v, 0);
+          if (sum < 100) sumBuckets.faible += 1;
+          else if (sum <= 150) sumBuckets.optimale += 1;
+          else sumBuckets.elevee += 1;
+        });
+
+        const patternDistribution = [
+          { name: 'Somme faible', value: sumBuckets.faible },
+          { name: 'Somme optimale', value: sumBuckets.optimale },
+          { name: 'Somme élevée', value: sumBuckets.elevee }
+        ];
+
+        const patterns = patternDistribution.map(p => ({
+          name: p.name,
+          frequency: p.value,
+          percentage: totalTirages > 0 ? (p.value / totalTirages) * 100 : 0
+        }));
+
         result = {
-          hotNumbers: [
-            { numero: 7, frequency: 45, lastAppearance: '2024-01-15' },
-            { numero: 14, frequency: 42, lastAppearance: '2024-01-12' },
-            { numero: 21, frequency: 41, lastAppearance: '2024-01-10' }
-          ],
-          coldNumbers: [
-            { numero: 1, frequency: 12, lastAppearance: '2023-12-01' },
-            { numero: 49, frequency: 15, lastAppearance: '2023-11-28' }
-          ],
-          patterns: [
-            { name: 'Séquence arithmétique', frequency: 23 },
-            { name: 'Répartition équilibrée', frequency: 45 }
-          ],
-          frequencyData: [
-            { numero: 7, frequency: 45 },
-            { numero: 14, frequency: 42 },
-            { numero: 21, frequency: 41 }
-          ]
+          totalTirages,
+          hotNumbers,
+          coldNumbers,
+          patterns,
+          frequencyData,
+          patternDistribution
         };
         break;
+      }
       
       case 'summary':
         try {
@@ -102,7 +132,8 @@ export async function GET(request: NextRequest) {
           // Calculer les statistiques globales
           const numerosFrequence = new Map<number, number>();
           tirages.forEach(tirage => {
-            const boules = [tirage.boule_1, tirage.boule_2, tirage.boule_3, tirage.boule_4, tirage.boule_5].filter(n => n != null);
+            const boules = [tirage.numero1, tirage.numero2, tirage.numero3, tirage.numero4, tirage.numero5]
+              .filter(n => n != null);
             boules.forEach(numero => {
               if (numero != null) {
                 numerosFrequence.set(numero, (numerosFrequence.get(numero) || 0) + 1);

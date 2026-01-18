@@ -356,33 +356,31 @@ export class AnalysisEngine {
    * Filtre les tirages selon la période spécifiée
    */
   private filterTiragesByPeriod(tirages: any[], period: string): any[] {
-    const now = new Date();
-    
+    if (!Array.isArray(tirages) || tirages.length === 0) return [];
+    const sorted = [...tirages].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const latestDate = sorted[0]?.date ? new Date(sorted[0].date) : new Date();
+    const byDays = (days: number) => {
+      const start = new Date(latestDate);
+      start.setDate(start.getDate() - days);
+      return sorted.filter(tirage => new Date(tirage.date) >= start);
+    };
+
     switch (period) {
       case 'last20':
-        return tirages.slice(-20);
-      
+        return sorted.slice(0, 20);
       case 'last50':
-        return tirages.slice(-50);
-      
+        return sorted.slice(0, 50);
       case 'last100':
-        return tirages.slice(-100);
-      
+        return sorted.slice(0, 100);
       case 'week':
-        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        return tirages.filter(tirage => new Date(tirage.date) >= weekAgo);
-      
+        return byDays(7);
       case 'month':
-        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        return tirages.filter(tirage => new Date(tirage.date) >= monthAgo);
-      
+        return byDays(30);
       case 'year':
-        const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
-        return tirages.filter(tirage => new Date(tirage.date) >= yearAgo);
-      
+        return byDays(365);
       case 'all':
       default:
-        return tirages;
+        return sorted;
     }
   }
 

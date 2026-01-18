@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AnalysisEngine } from '@/lib/analysis-engine';
+import { dataStorage } from '@/lib/data-storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -74,17 +75,37 @@ export async function GET(request: NextRequest) {
         result = await engine.analyzeEcartsSortie(period);
         break;
       
-      case 'complementary-frequency':
-        // Retourner des données de fréquence complémentaire simulées
+      case 'complementary-frequency': {
+        const tirages = dataStorage.getTiragesForPeriod(period);
+        const totalTirages = tirages.length;
+        const counts = new Array(10).fill(0);
+        const lastAppearance = new Array<string | null>(10).fill(null);
+
+        for (const tirage of tirages) {
+          const c = (tirage as any).complementaire ?? (tirage as any).numero_chance;
+          if (typeof c === 'number' && c >= 1 && c <= 10) {
+            const idx = c - 1;
+            counts[idx] += 1;
+            if (!lastAppearance[idx]) {
+              lastAppearance[idx] = tirage.date;
+            }
+          }
+        }
+
+        const frequencies = counts.map((count, idx) => ({
+          numero: idx + 1,
+          frequency: count,
+          percentage: totalTirages > 0 ? (count / totalTirages) * 100 : 0,
+          lastAppearance: lastAppearance[idx],
+          averageGap: count > 0 ? totalTirages / count : totalTirages
+        }));
+
         result = {
-          totalTirages: 1000,
-          frequencies: [
-            { numero: 1, frequency: 45, percentage: 4.5, lastAppearance: '2024-01-15', averageGap: 22 },
-            { numero: 2, frequency: 52, percentage: 5.2, lastAppearance: '2024-01-10', averageGap: 19 },
-            { numero: 3, frequency: 38, percentage: 3.8, lastAppearance: '2024-01-20', averageGap: 26 }
-          ]
+          totalTirages,
+          frequencies
         };
         break;
+      }
       
       case 'combinations':
         // Générer des combinaisons simples

@@ -84,13 +84,17 @@ export default function FrequencyTrends({ period }: FrequencyTrendsProps) {
 
   return (
     <div className="space-y-8">
-      <section aria-labelledby="freq-title" className="rounded-2xl border-2 bg-white p-4 shadow">
-        <div className="flex items-end justify-between gap-4 mb-3">
+      <section aria-labelledby="freq-title" className="card">
+        <div className="section-header">
           <div>
-            <h3 id="freq-title" className="text-lg font-bold text-slate-900">{t('freq.title_main')}</h3>
-            <p className="text-xs text-slate-600">{t('common.period')}: {period} • {t('common.draws')}: {totalDraws} • {t('freq.expected', { value: expectedMain.toFixed(1) })}</p>
+            <h3 id="freq-title" className="section-title">{t('freq.title_main')}</h3>
+            <p className="section-subtitle">🎯 Fréquences réelles des numéros principaux</p>
           </div>
-          <div className="text-xs text-slate-500">{t('freq.legend')}</div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="pill pill-info">{t('common.period')}: {period}</span>
+            <span className="pill pill-muted">{t('common.draws')}: {totalDraws}</span>
+            <span className="pill pill-muted">{t('freq.expected', { value: expectedMain.toFixed(1) })}</span>
+          </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <BarChart
@@ -102,11 +106,16 @@ export default function FrequencyTrends({ period }: FrequencyTrendsProps) {
         </div>
       </section>
 
-      <section aria-labelledby="chance-title" className="rounded-2xl border-2 bg-white p-4 shadow">
-        <div className="flex items-end justify-between gap-4 mb-3">
+      <section aria-labelledby="chance-title" className="card">
+        <div className="section-header">
           <div>
-            <h3 id="chance-title" className="text-lg font-bold text-slate-900">{t('freq.title_chance')}</h3>
-            <p className="text-xs text-slate-600">{t('common.period')}: {period} • {t('common.draws')}: {totalDraws} • {t('freq.expected', { value: expectedChance.toFixed(1) })}</p>
+            <h3 id="chance-title" className="section-title">{t('freq.title_chance')}</h3>
+            <p className="section-subtitle">🎲 Fréquences réelles des numéros chance</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="pill pill-info">{t('common.period')}: {period}</span>
+            <span className="pill pill-muted">{t('common.draws')}: {totalDraws}</span>
+            <span className="pill pill-muted">{t('freq.expected', { value: expectedChance.toFixed(1) })}</span>
           </div>
         </div>
         <BarChart

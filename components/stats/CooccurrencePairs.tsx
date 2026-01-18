@@ -58,13 +58,17 @@ export default function CooccurrencePairs({ period, pageSize = 20 }: { period: P
   if (error) return <div className="rounded-xl border p-4 text-sm text-rose-600" role="alert">{error}</div>;
 
   return (
-    <section aria-labelledby="cooc-title" className="rounded-2xl border-2 bg-white p-4 shadow">
-      <div className="flex items-end justify-between gap-4 mb-3">
+    <section aria-labelledby="cooc-title" className="card">
+      <div className="section-header">
         <div>
-          <h3 id="cooc-title" className="text-lg font-bold text-slate-900">{t('cooc.title')}</h3>
-          <p className="text-xs text-slate-600">{t('common.period')}: {period} • {t('common.draws')}: {draws.length} • {t('cooc.distinct')}: {pairs.length}</p>
+          <h3 id="cooc-title" className="section-title">{t('cooc.title')}</h3>
+          <p className="section-subtitle">🔗 Paires les plus fréquentes dans la fenêtre</p>
         </div>
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="pill pill-info">{t('common.period')}: {period}</span>
+          <span className="pill pill-muted">{t('common.draws')}: {draws.length}</span>
+          <span className="pill pill-muted">{t('cooc.distinct')}: {pairs.length}</span>
+          <div className="flex items-center gap-2 text-sm">
           <button
             className="px-2 py-1 rounded border disabled:opacity-50"
             onClick={() => setPage(p => Math.max(1, p - 1))}
@@ -82,6 +86,7 @@ export default function CooccurrencePairs({ period, pageSize = 20 }: { period: P
           >
             ▶
           </button>
+        </div>
         </div>
       </div>
 

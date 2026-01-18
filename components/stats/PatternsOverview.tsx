@@ -57,13 +57,16 @@ export default function PatternsOverview({ period }: { period: Period }) {
   const maxBin = Math.max(1, ...data.decileBins);
 
   return (
-    <section aria-labelledby="patterns-title" className="rounded-2xl border-2 bg-white p-4 shadow">
-      <div className="flex items-end justify-between gap-4 mb-3">
+    <section aria-labelledby="patterns-title" className="card">
+      <div className="section-header">
         <div>
-          <h3 id="patterns-title" className="text-lg font-bold text-slate-900">{t('pat.title')}</h3>
-          <p className="text-xs text-slate-600">{t('pat.subtitle', { period })}</p>
+          <h3 id="patterns-title" className="section-title">{t('pat.title')}</h3>
+          <p className="section-subtitle">✨ Répartition par parité, somme et zones</p>
         </div>
-        <div className="text-xs text-slate-500">{t('pat.hint')}</div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="pill pill-info">{t('common.period')}: {period}</span>
+          <span className="pill pill-muted">{t('pat.hint')}</span>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

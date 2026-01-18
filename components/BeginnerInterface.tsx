@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { 
@@ -12,7 +12,6 @@ import {
   CheckCircle,
   Calendar,
   DollarSign,
-  Settings,
   X,
   Calculator,
   Sliders,
@@ -23,18 +22,6 @@ import ActionButtons from './ActionButtons';
 import { savedGridsManager } from '../lib/saved-grids-manager';
 import { ComplexityLevel } from '../lib/complexity-manager';
 import AnalysisCenter from './analysis/AnalysisCenter';
-// Import des fonctionnalités avancées pour unifier tous les modes
-import CombinationTester from './CombinationTester';
-import FrequencyAnalysis from './FrequencyAnalysis';
-import PatternAnalysis from './PatternAnalysis';
-import TrendAnalysis from './TrendAnalysis';
-import AdvancedStatistics from './AdvancedStatistics';
-import UltraAdvancedStatistics from './UltraAdvancedStatistics';
-import OfficialRulesAnalysis from './OfficialRulesAnalysis';
-import EvenOddAnalysis from './EvenOddAnalysis';
-import SavedGridsManager from './SavedGridsManager';
-import OpenDataSoftSync from './OpenDataSoftSync';
-import ThreeWindowInterface from './ThreeWindowInterface';
 
 interface BeginnerInterfaceProps {
   globalAnalysisPeriod: string;
@@ -83,7 +70,7 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
   } | null>(null);
 
   // Centre Loto Unifié: onglets (avec options avancées grisées)
-  type UnifiedTab = 'analyse' | 'generation' | 'tests' | 'statistiques' | 'strategies' | 'tendances' | 'statsAvancees' | 'ultraStats' | 'regles' | 'pairImpair' | 'sync' | 'gestion';
+  type UnifiedTab = 'analyse' | 'generation' | 'statistiques' | 'gestion';
   const [activeUnifiedTab, setActiveUnifiedTab] = useState<UnifiedTab>('analyse');
   const [premiumUnlocked, setPremiumUnlocked] = useState<boolean>(false);
   const [showOptimizer, setShowOptimizer] = useState<boolean>(false);
@@ -98,6 +85,7 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
   const [reduceUniverse, setReduceUniverse] = useState<boolean>(false);
   const [coverageType, setCoverageType] = useState<'balanced'|'strong'|'fast'>('balanced');
   const [optimizationGoal, setOptimizationGoal] = useState<'diversity'|'hot'|'balance'>('diversity');
+  const beginnerSimpleMode = true;
   // Estimation combinatoire théorique (plus de comptage historique ici)
 
   // Utilitaires combinatoires pour l'estimation
@@ -457,11 +445,18 @@ export default function BeginnerInterface({ globalAnalysisPeriod }: BeginnerInte
   // (supprimé: doublons)
 
   const unifiedTabs: Array<{ id: UnifiedTab; label: string; premium?: boolean }> = [
-    { id: 'analyse', label: '🎯 Analyse' },
-    { id: 'generation', label: '🎲 Génération' },
-    // onglets retirés: tests, statistiques, strategies, tendances, statsAvancees, ultraStats, regles, pairImpair, sync
-    { id: 'gestion', label: '💾 Gestion', premium: true },
+    { id: 'analyse', label: 'Analyse' },
+    { id: 'generation', label: 'Génération' },
+    { id: 'statistiques', label: 'Statistiques' },
+    { id: 'gestion', label: 'Gestion', premium: true },
   ];
+
+  const unifiedTabTheme: Record<UnifiedTab, string> = {
+    analyse: 'theme-analysis',
+    generation: 'theme-generation',
+    statistiques: 'theme-statistics',
+    gestion: 'theme-management'
+  };
 
   // Charger fréquences/patterns pour la fenêtre sélectionnée
   useEffect(() => {
@@ -535,6 +530,11 @@ const periodOptions: { key: typeof selectedWindow; label: string }[] = [
   { key: 'all', label: 'Tous' },
 ];
   const selectedWindowLabel = periodOptions.find(p => p.key === selectedWindow)?.label || selectedWindow;
+  const statsPeriod = useMemo(() => {
+    if (selectedWindow === 'quarter') return 'month';
+    if (selectedWindow === 'semester') return 'year';
+    return selectedWindow;
+  }, [selectedWindow]);
   
   // State for grid generation
   const [showGridGeneration, setShowGridGeneration] = useState(false);
@@ -1104,156 +1104,24 @@ const periodOptions: { key: typeof selectedWindow; label: string }[] = [
     <div className="max-w-4xl mx-auto space-y-8">
       {/* En-tête Centre Loto Unifié (aide cliquable) */}
       <motion.div
-        initial={{ opacity: 0, y: -20, scale: 0.9 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        className="container-pastel-teal relative overflow-hidden rounded-3xl p-8 shadow-2xl"
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="beginner-header"
+        onClick={() => setShowModeDetails(true)}
       >
-        {/* Boules de loto flottantes en arrière-plan */}
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(15)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute text-4xl opacity-20"
-              style={{
-                left: `${10 + i * 6}%`,
-                top: `${15 + (i % 4) * 20}%`,
-              }}
-              animate={{
-                y: [0, -20, 0],
-                rotate: [0, 360],
-                scale: [0.8, 1.2, 0.8]
-              }}
-              transition={{
-                duration: 4 + i * 0.3,
-                repeat: Infinity,
-                delay: i * 0.2,
-              }}
-            >
-              {i % 5 === 0 ? '🎱' : i % 5 === 1 ? '🟢' : i % 5 === 2 ? '🔵' : i % 5 === 3 ? '🟡' : '🔴'}
-      </motion.div>
-          ))}
-        </div>
-
-        {/* Étoiles filantes */}
-        <div className="absolute inset-0">
-          {[...Array(8)].map((_, i) => (
-            <motion.div
-              key={`star-${i}`}
-              className="absolute text-2xl text-teal-400"
-              style={{
-                left: `${20 + i * 10}%`,
-                top: `${10 + (i % 3) * 30}%`,
-              }}
-              animate={{
-                x: [0, 100, -50, 0],
-                opacity: [0, 1, 1, 0],
-                scale: [0.5, 1.5, 1, 0.5]
-              }}
-              transition={{
-                duration: 3 + i * 0.5,
-                repeat: Infinity,
-                delay: i * 0.4,
-              }}
-            >
-              ⭐
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Aura magique tournante */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-conic from-teal-200/30 via-transparent to-teal-300/30"
-          animate={{ rotate: [0, 360] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-        />
-
-        {/* Contenu principal */}
-        <div className="relative z-10 text-center">
-          {/* Icône centrale animée */}
-          <motion.div
-            animate={{ 
-              rotate: [0, 10, -10, 0],
-              scale: [1, 1.1, 1],
-              y: [0, -5, 0]
-            }}
-            transition={{ duration: 3, repeat: Infinity }}
-            className="text-7xl mb-6 filter drop-shadow-2xl"
-          >
-            🎰
-          </motion.div>
-
-          {/* Titre avec effet de brillance */}
-          <motion.h1 
-            className="text-4xl md:text-5xl font-bold mb-4 text-teal-800 relative"
-            animate={{
-              textShadow: [
-                "0 0 20px rgba(20, 184, 166, 0.5)",
-                "0 0 40px rgba(20, 184, 166, 0.8)",
-                "0 0 20px rgba(20, 184, 166, 0.5)"
-              ]
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            ✨ Centre Loto Unifié ✨
-          </motion.h1>
-
-          {/* Sous-titre magique */}
-          <motion.p 
-            className="text-xl text-teal-700 font-semibold mb-4"
-            animate={{ opacity: [0.7, 1, 0.7] }}
-            transition={{ duration: 2.5, repeat: Infinity }}
-          >
-            🍀 Analyse & Génération Unifiées 🍀
-          </motion.p>
-
-          {/* Badge interactif */}
-          <motion.div 
-            className="inline-flex items-center gap-2 bg-teal-100/80 backdrop-blur rounded-full px-6 py-3 text-teal-800 font-bold shadow-lg"
-            whileHover={{ scale: 1.05 }}
-            animate={{ 
-              boxShadow: [
-                "0 0 20px rgba(20, 184, 166, 0.3)",
-                "0 0 40px rgba(20, 184, 166, 0.6)",
-                "0 0 20px rgba(20, 184, 166, 0.3)"
-              ]
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <Settings className="w-5 h-5" />
-            Cliquez pour découvrir la magie
-            <motion.div
-              animate={{ rotate: [0, 360] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              🎪
-            </motion.div>
-          </motion.div>
-        </div>
-
-        {/* Particules flottantes */}
-        <div className="absolute inset-0 pointer-events-none">
-          {[...Array(12)].map((_, i) => (
-            <motion.div
-              key={`particle-${i}`}
-              className="absolute text-sm text-teal-300"
-              style={{
-                left: `${5 + i * 8}%`,
-                top: `${5 + (i % 5) * 18}%`,
-              }}
-              animate={{
-                y: [0, -100, 0],
-                opacity: [0, 1, 0],
-                scale: [0.5, 1, 0.5]
-              }}
-              transition={{
-                duration: 5 + i * 0.3,
-                repeat: Infinity,
-                delay: i * 0.5,
-              }}
-            >
-              {i % 6 === 0 ? '💫' : i % 6 === 1 ? '✨' : i % 6 === 2 ? '🌟' : i % 6 === 3 ? '⭐' : i % 6 === 4 ? '💎' : '🎯'}
-            </motion.div>
-          ))}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="text-4xl">🌱</div>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-3xl font-bold">Centre Loto Unifié</h1>
+              <p className="text-green-100 text-lg">Mode Débutant : simple, guidé, fiable</p>
+              <div className="mt-2 text-sm text-white/80">Cliquez pour voir les détails du mode</div>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="pill theme-analysis">Sélection</span>
+            <span className="pill theme-generation">Génération</span>
+          </div>
         </div>
       </motion.div>
 
@@ -1265,8 +1133,36 @@ const periodOptions: { key: typeof selectedWindow; label: string }[] = [
         </div>
       )}
 
+      {selectionChoiceMade && (
+        <div className="card">
+          <div className="section-header">
+            <div>
+              <h3 className="section-title">Générer les grilles</h3>
+              <p className="section-subtitle">
+                Mode actuel : {showManualSelection ? 'Sélection manuelle' : 'Sélection automatique'}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={handleGenerate}
+              disabled={!selectedNumbers || isGenerating}
+              className="px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold shadow disabled:opacity-50"
+            >
+              {isGenerating ? 'Génération…' : 'Générer les grilles'}
+            </button>
+            <button
+              onClick={resetToStart}
+              className="px-4 py-2 rounded-lg bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200"
+            >
+              Revenir au choix
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Entête Centre IA (période + conseil) — juste au-dessus des onglets */}
-      {selectionChoiceMade && !showManualSelection && (
+      {!beginnerSimpleMode && selectionChoiceMade && !showManualSelection && (
         <div className="mt-4 relative">
           <div className="absolute -top-3 left-0 text-[10px] px-2 py-0.5 rounded bg-slate-700 text-white/90 shadow">Entête Centre IA</div>
           <div className="text-center mb-3">
@@ -1317,7 +1213,7 @@ const periodOptions: { key: typeof selectedWindow; label: string }[] = [
       )}
 
       {/* Barre d'onglets unifiée (options premium grisées) — visible uniquement après choix Sélection automatique */}
-      {selectionChoiceMade && !showManualSelection && (
+      {!beginnerSimpleMode && selectionChoiceMade && !showManualSelection && (
       <div className="mt-6">
         <div className="flex flex-wrap justify-center gap-2">
           {unifiedTabs.map(t => {
@@ -1328,7 +1224,7 @@ const periodOptions: { key: typeof selectedWindow; label: string }[] = [
               <button
                 key={t.id}
                 className={`px-3 py-2 rounded-lg text-sm font-semibold transition ${
-                  isActive ? 'bg-emerald-600 text-white' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+                  isActive ? unifiedTabTheme[t.id] : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
                 } ${(locked || needsSelection) ? 'opacity-60 cursor-not-allowed' : ''}`}
                 onClick={() => {
                   if (locked) {
@@ -1352,7 +1248,7 @@ const periodOptions: { key: typeof selectedWindow; label: string }[] = [
       )}
 
       {/* Contenu par onglet — visible uniquement après choix Sélection automatique */}
-      {selectionChoiceMade && !showManualSelection && (
+      {!beginnerSimpleMode && selectionChoiceMade && !showManualSelection && (
       <div className="mt-4">
         {activeUnifiedTab === 'analyse' && (
           <AnalysisCenter 
@@ -1708,8 +1604,7 @@ const periodOptions: { key: typeof selectedWindow; label: string }[] = [
         )}
 
 
-        {/* Onglets retirés (tests, statistiques, strategies, tendances, statsAvancees, ultraStats, regles, pairImpair, sync) */}
-        {activeUnifiedTab === 'gestion' && (premiumUnlocked ? <SavedGridsManager /> : null)}
+        {/* Statistiques avancées supprimées en mode Débutant */}
       </div>
       )}
 
@@ -1769,7 +1664,7 @@ const periodOptions: { key: typeof selectedWindow; label: string }[] = [
       )}
 
       {/* Écran minimal (aide + "Commencer" + deux choix) */}
-      {!selectionChoiceMade && (
+      {!beginnerSimpleMode && !selectionChoiceMade && (
         <ActionButtons
           currentStep={currentStep}
           onSelectAI={handleSelectAI}
@@ -1783,73 +1678,18 @@ const periodOptions: { key: typeof selectedWindow; label: string }[] = [
 
       {/* Interface d'analyse IA - visible uniquement après Sélection automatique */}
       {currentStep === 'select' && selectionChoiceMade && !showManualSelection && (
-        <motion.div
-          initial={{ opacity: 0, y: 30, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.8, type: "spring" }}
-          className="bg-gradient-to-br from-slate-50 to-blue-50 relative overflow-hidden rounded-3xl p-6 md:p-8 shadow-2xl border border-slate-200"
-        >
-          {/* Background professionnel avec motifs subtils */}
-          <div className="absolute inset-0 overflow-hidden">
-            {/* Grille de fond subtile */}
-            <div className="absolute inset-0 opacity-5">
-              <div className="grid grid-cols-12 h-full">
-                {[...Array(12)].map((_, i) => (
-                  <div key={i} className="border-r border-slate-300"></div>
-                ))}
-              </div>
+        <div className="card">
+          <div className="section-header">
+            <div>
+              <h3 className="section-title">Sélection automatique</h3>
+              <p className="section-subtitle">Analyse rapide et sélection assistée</p>
             </div>
-            
-            {/* Particules flottantes discrètes */}
-            {[...Array(8)].map((_, i) => (
-              <motion.div
-                key={`particle-${i}`}
-                className="absolute w-1 h-1 bg-blue-300 rounded-full opacity-30"
-                style={{
-                  left: `${10 + i * 10}%`,
-                  top: `${20 + (i % 3) * 20}%`,
-                }}
-                animate={{
-                  y: [0, -20, 0],
-                  opacity: [0.3, 0.6, 0.3],
-                  scale: [1, 1.5, 1]
-                }}
-                transition={{
-                  duration: 4 + i * 0.5,
-                  repeat: Infinity,
-                  delay: i * 0.7,
-                }}
-              />
-            ))}
           </div>
-        
-          {/* Header professionnel */}
-          <div className="relative z-10 text-center mb-8">
-            {/* (en-tête IA et badge inférieurs supprimés pour éviter le doublon) */}
-        </div>
-        
-          {/* Centre de contrôle moderne supprimé */}
-          
-          {/* Interface d'analyse intégrée supprimée (doublon) */}
-
-          {/* Ancien bloc (masqué) */}
-          {false && (
-          <SimpleUnifiedAnalysis 
+          <SimpleUnifiedAnalysis
             analysisPeriod={globalAnalysisPeriod}
             onNumberSelection={handleNumberSelection}
-          />)}
-
-          {/* Rapport d'analyse détaillé supprimé pour éviter doublon */}
-
-          {/* Effets subtils de bordure */}
-          <div className="absolute inset-0 pointer-events-none">
-            {/* Coins lumineux discrets */}
-            <div className="absolute top-4 left-4 w-2 h-2 bg-blue-400 rounded-full opacity-20 animate-pulse"></div>
-            <div className="absolute top-4 right-4 w-2 h-2 bg-emerald-400 rounded-full opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
-            <div className="absolute bottom-4 left-4 w-2 h-2 bg-indigo-400 rounded-full opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute bottom-4 right-4 w-2 h-2 bg-teal-400 rounded-full opacity-20 animate-pulse" style={{ animationDelay: '3s' }}></div>
-          </div>
-        </motion.div>
+          />
+        </div>
       )}
 
       {/* Interface de Génération de Grilles */}
@@ -3294,9 +3134,9 @@ const periodOptions: { key: typeof selectedWindow; label: string }[] = [
               {/* Description */}
               <div className="text-center">
                 <p className="text-gray-700 text-lg">
-                  ✨ Interface complète et magique pour maîtriser le loto ✨
-        </p>
-      </div>
+                  Interface claire et guidée pour maîtriser le loto
+                </p>
+              </div>
               
               {/* Fonctionnalités */}
               <div className="bg-emerald-50 rounded-xl p-5 border-2 border-emerald-200">
@@ -3319,7 +3159,7 @@ const periodOptions: { key: typeof selectedWindow; label: string }[] = [
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-emerald-500">💾</span>
-                    <span><strong>Sauvegarde intelligente</strong> - LocalStorage persistant</span>
+                    <span><strong>Sauvegarde locale</strong> - Grilles retrouvables après tirage</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-emerald-500">🎲</span>

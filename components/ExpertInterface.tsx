@@ -7,34 +7,16 @@ import {
   Target,
   Zap,
   BarChart3,
-  Trophy,
   Save,
-  RefreshCw,
-  Settings,
-  Calculator,
-  TrendingUp,
-  Search,
-  Clock,
-  FlaskConical,
-  Layers,
-  Eye,
   X
 } from 'lucide-react';
 
 // Import de tous les composants avancés
 import SimpleUnifiedAnalysis from './SimpleUnifiedAnalysis';
-import ThreeWindowInterface from './ThreeWindowInterface';
 import EnhancedGridGenerator from './EnhancedGridGenerator';
 import SavedGridsManager from './SavedGridsManager';
-import OpenDataSoftSync from './OpenDataSoftSync';
-import CombinationTester from './CombinationTester';
 import FrequencyAnalysis from './FrequencyAnalysis';
 import PatternAnalysis from './PatternAnalysis';
-import TrendAnalysis from './TrendAnalysis';
-import AdvancedStatistics from './AdvancedStatistics';
-import UltraAdvancedStatistics from './UltraAdvancedStatistics';
-import OfficialRulesAnalysis from './OfficialRulesAnalysis';
-import EvenOddAnalysis from './EvenOddAnalysis';
 
 interface ExpertInterfaceProps {
   globalAnalysisPeriod: string;
@@ -42,14 +24,13 @@ interface ExpertInterfaceProps {
   onCombinationsChange: (count: number) => void;
 }
 
-type ExpertCategory = 'analysis' | 'generation' | 'testing' | 'statistics' | 'management';
+type ExpertCategory = 'analysis' | 'generation' | 'statistics' | 'management';
 
 type ExpertTab = 
-  | 'intelligent-analysis' | 'strategy-config' 
-  | 'simple-generation' | 'advanced-generation'
-  | 'combination-tester'
-  | 'frequency' | 'patterns' | 'trends' | 'advanced-stats' | 'ultra-stats' | 'rules' | 'even-odd'
-  | 'saved-grids' | 'auto-sync';
+  | 'intelligent-analysis'
+  | 'simple-generation'
+  | 'statistics-overview'
+  | 'saved-grids';
 
 export default function ExpertInterface({ 
   globalAnalysisPeriod,
@@ -58,61 +39,56 @@ export default function ExpertInterface({
 }: ExpertInterfaceProps) {
   const [activeCategory, setActiveCategory] = useState<ExpertCategory>('analysis');
   const [activeTab, setActiveTab] = useState<ExpertTab>('intelligent-analysis');
-  const [showPerformanceMetrics, setShowPerformanceMetrics] = useState(true);
-  const [compactMode, setCompactMode] = useState(false);
   const [showModeDetails, setShowModeDetails] = useState(false);
 
   const categories = [
     {
       id: 'analysis' as ExpertCategory,
-      label: '🧠 Analyse Avancée',
+      label: 'Analyse',
       icon: Brain,
       tabs: [
-        { id: 'intelligent-analysis' as ExpertTab, label: '🎯 IA Intelligente', icon: Target },
-        { id: 'strategy-config' as ExpertTab, label: '⚙️ Config Stratégies', icon: Settings }
+        { id: 'intelligent-analysis' as ExpertTab, label: 'Analyse IA', icon: Target }
       ]
     },
     {
       id: 'generation' as ExpertCategory,
-      label: '🎲 Génération Expert',
+      label: 'Génération',
       icon: Zap,
       tabs: [
-        { id: 'simple-generation' as ExpertTab, label: '🎯 Grilles Simples', icon: Target },
-        { id: 'advanced-generation' as ExpertTab, label: '🚀 Optimisateur', icon: Calculator }
-      ]
-    },
-    {
-      id: 'testing' as ExpertCategory,
-      label: '🧪 Tests & Validation',
-      icon: FlaskConical,
-      tabs: [
-        { id: 'combination-tester' as ExpertTab, label: '🧪 Testeur', icon: FlaskConical }
+        { id: 'simple-generation' as ExpertTab, label: 'Grilles', icon: Target }
       ]
     },
     {
       id: 'statistics' as ExpertCategory,
-      label: '📊 Statistiques Expert',
+      label: 'Statistiques',
       icon: BarChart3,
       tabs: [
-        { id: 'frequency' as ExpertTab, label: '📈 Fréquences', icon: TrendingUp },
-        { id: 'patterns' as ExpertTab, label: '🔍 Patterns', icon: Search },
-        { id: 'trends' as ExpertTab, label: '📊 Tendances', icon: BarChart3 },
-        { id: 'advanced-stats' as ExpertTab, label: '🎯 Stats Avancées', icon: Target },
-        { id: 'ultra-stats' as ExpertTab, label: '🚀 Ultra Stats', icon: Brain },
-        { id: 'rules' as ExpertTab, label: '📋 Règles', icon: Trophy },
-        { id: 'even-odd' as ExpertTab, label: '⚖️ Pair/Impair', icon: Calculator }
+        { id: 'statistics-overview' as ExpertTab, label: 'Vue d’ensemble', icon: BarChart3 }
       ]
     },
     {
       id: 'management' as ExpertCategory,
-      label: '💾 Gestion Expert',
+      label: 'Gestion',
       icon: Save,
       tabs: [
-        { id: 'saved-grids' as ExpertTab, label: '💾 Grilles', icon: Save },
-        { id: 'auto-sync' as ExpertTab, label: '🔄 Sync Auto', icon: RefreshCw }
+        { id: 'saved-grids' as ExpertTab, label: 'Grilles', icon: Save }
       ]
     }
   ];
+
+  const categoryTheme: Record<ExpertCategory, string> = {
+    analysis: 'theme-analysis',
+    generation: 'theme-generation',
+    statistics: 'theme-statistics',
+    management: 'theme-management'
+  };
+
+  const categorySoft: Record<ExpertCategory, string> = {
+    analysis: 'theme-analysis-soft',
+    generation: 'theme-generation-soft',
+    statistics: 'theme-statistics-soft',
+    management: 'theme-management-soft'
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -130,46 +106,31 @@ export default function ExpertInterface({
             }}
           />
         );
-      case 'strategy-config':
-        return (
-          <ThreeWindowInterface
-            globalAnalysisPeriod={globalAnalysisPeriod as 'week' | 'month' | 'year' | 'all' | 'last20' | 'last50' | 'last100'}
-            mode="strategy-generator"
-            onCombinationsChange={onCombinationsChange}
-          />
-        );
-        
       // Génération
       case 'simple-generation':
         return <EnhancedGridGenerator globalAnalysisPeriod={globalAnalysisPeriod} />;
-      case 'advanced-generation':
-        return <EnhancedGridGenerator globalAnalysisPeriod={globalAnalysisPeriod} />;
-        
-      // Tests
-      case 'combination-tester':
-        return <CombinationTester />;
         
       // Statistiques
-      case 'frequency':
-        return <FrequencyAnalysis analysisPeriod={globalAnalysisPeriod as any} />;
-      case 'patterns':
-        return <PatternAnalysis analysisPeriod={globalAnalysisPeriod as any} />;
-      case 'trends':
-        return <TrendAnalysis />;
-      case 'advanced-stats':
-        return <AdvancedStatistics analysisPeriod={globalAnalysisPeriod as any} />;
-      case 'ultra-stats':
-        return <UltraAdvancedStatistics analysisPeriod={globalAnalysisPeriod as any} />;
-      case 'rules':
-        return <OfficialRulesAnalysis />;
-      case 'even-odd':
-        return <EvenOddAnalysis />;
+      case 'statistics-overview':
+        return (
+          <div className="card">
+            <div className="section-header">
+              <div>
+                <h3 className="section-title">📊 Statistiques clés</h3>
+                <p className="section-subtitle">Fréquences et patterns sur la période choisie</p>
+              </div>
+              <span className="pill pill-info">Période: {globalAnalysisPeriod}</span>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              <FrequencyAnalysis analysisPeriod={globalAnalysisPeriod as any} />
+              <PatternAnalysis analysisPeriod={globalAnalysisPeriod as any} />
+            </div>
+          </div>
+        );
         
       // Gestion
       case 'saved-grids':
         return <SavedGridsManager />;
-      case 'auto-sync':
-        return <OpenDataSoftSync />;
         
       default:
         return null;
@@ -185,69 +146,43 @@ export default function ExpertInterface({
         className="expert-header"
         onClick={() => setShowModeDetails(true)}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="text-4xl">🎯</div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <h1 className="text-3xl font-bold flex items-center gap-2">
                 Mode Expert
-                <Settings className="w-6 h-6 opacity-70" />
               </h1>
               <p className="text-red-100 text-lg">
-                Accès complet à toutes les fonctionnalités avancées
+                Accès complet aux outils avancés, avec résultats fiables
               </p>
+              <div className="mt-2 text-sm text-white/80">
+                Cliquez pour voir les détails du mode
+              </div>
             </div>
           </div>
-          
-          {/* Contrôles Expert */}
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setShowPerformanceMetrics(!showPerformanceMetrics)}
-              className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
-            >
-              <Eye className="w-4 h-4" />
-              <span className="text-sm">Métriques</span>
-            </button>
-            <button
-              onClick={() => setCompactMode(!compactMode)}
-              className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
-            >
-              <Layers className="w-4 h-4" />
-              <span className="text-sm">Compact</span>
-            </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="pill theme-analysis">Analyse</span>
+            <span className="pill theme-generation">Génération</span>
+            <span className="pill theme-statistics">Statistiques</span>
+            <span className="pill theme-management">Gestion</span>
           </div>
         </div>
-        
-        {/* Métriques de performance */}
-        {showPerformanceMetrics && (
-          <div className="mt-4 grid md:grid-cols-4 gap-4">
-            <div className="bg-white/10 rounded-lg p-3 text-center">
-              <div className="text-lg font-bold">12,272</div>
-              <div className="text-xs text-red-200">Tirages Historiques</div>
-            </div>
-            <div className="bg-white/10 rounded-lg p-3 text-center">
-              <div className="text-lg font-bold">49 ans</div>
-              <div className="text-xs text-red-200">Période Couverte</div>
-            </div>
-            <div className="bg-white/10 rounded-lg p-3 text-center">
-              <div className="text-lg font-bold">47</div>
-              <div className="text-xs text-red-200">Composants Actifs</div>
-            </div>
-            <div className="bg-white/10 rounded-lg p-3 text-center">
-              <div className="text-lg font-bold">8</div>
-              <div className="text-xs text-red-200">APIs Fonctionnelles</div>
-            </div>
-          </div>
-        )}
       </motion.div>
 
       {/* Navigation par catégories */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl p-6 shadow-lg border border-gray-200"
+        className="card"
       >
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Catégories Expertes</h2>
+        <div className="section-header">
+          <div>
+            <h2 className="section-title">Navigation Expert</h2>
+            <p className="section-subtitle">Tout l’essentiel, en 4 blocs clairs</p>
+          </div>
+          <span className="pill pill-info">Mode Expert</span>
+        </div>
         
         <div className="flex flex-wrap gap-2 mb-6">
           {categories.map((category) => {
@@ -261,14 +196,14 @@ export default function ExpertInterface({
                   setActiveCategory(category.id);
                   setActiveTab(category.tabs[0].id);
                 }}
-                className={`flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold transition-all ${
                   isActive
-                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg'
+                    ? `${categoryTheme[category.id]} shadow-lg`
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
                 <Icon className="w-5 h-5" />
-                <span className={compactMode ? 'hidden' : ''}>{category.label}</span>
+                <span>{category.label}</span>
               </button>
             );
           })}
@@ -287,12 +222,12 @@ export default function ExpertInterface({
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-1 px-3 py-2 rounded text-sm font-medium transition-all ${
                     isActive
-                      ? 'bg-orange-500 text-white'
+                      ? categorySoft[activeCategory]
                       : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
-                  <span className={compactMode ? 'hidden' : ''}>{tab.label}</span>
+                  <span>{tab.label}</span>
                 </button>
               );
             })}
@@ -306,25 +241,21 @@ export default function ExpertInterface({
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3 }}
-        className={compactMode ? 'space-y-4' : 'space-y-6'}
+        className="space-y-6"
       >
         {renderTabContent()}
       </motion.div>
 
       {/* Panneau d'informations expert */}
-      {!compactMode && (
-        <div className="bg-gradient-to-r from-gray-50 to-blue-50 border border-gray-200 rounded-lg p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="text-orange-600">🎯</div>
-            <span className="font-semibold text-gray-800">Mode Expert Actif</span>
-          </div>
-          <p className="text-gray-700 text-sm">
-            Vous avez accès à toutes les fonctionnalités avancées : analyses mathématiques, optimisations Set Cover, 
-            bornes théoriques, et tous les outils de validation. Utilisez les métriques de performance pour 
-            surveiller les calculs complexes.
-          </p>
+      <div className="card">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="text-orange-600">🎯</div>
+          <span className="font-semibold text-gray-800">Mode Expert Actif</span>
         </div>
-      )}
+        <p className="text-gray-700 text-sm">
+          Analyse avancée, génération optimisée et statistiques fiables basées sur l'historique réel.
+        </p>
+      </div>
 
       {/* Modale Détails du Mode Expert */}
       {showModeDetails && (
@@ -348,22 +279,20 @@ export default function ExpertInterface({
               <div className="bg-rose-50 rounded-lg p-4">
                 <h4 className="font-semibold text-rose-800 mb-2">Fonctionnalités disponibles :</h4>
                 <ul className="space-y-1 text-sm text-rose-700">
-                  <li>• Toutes les fonctionnalités précédentes</li>
-                  <li>• Optimisateur de garanties</li>
-                  <li>• Analyse rétroactive complète</li>
-                  <li>• Formules mathématiques</li>
-                  <li>• Bornes théoriques</li>
-                  <li>• Synchronisation automatique</li>
+                  <li>• Analyse IA sur données réelles</li>
+                  <li>• Génération de grilles (simple & multiple)</li>
+                  <li>• Statistiques fiables : fréquences + patterns</li>
+                  <li>• Gestion des grilles sauvegardées</li>
                 </ul>
               </div>
               
               <div className="bg-red-50 rounded-lg p-4">
                 <h4 className="font-semibold text-red-800 mb-2">4 catégories d'outils :</h4>
                 <div className="space-y-1 text-sm text-red-700">
-                  <div>• <strong>Analyse Avancée</strong> : IA + Config stratégies</div>
-                  <div>• <strong>Génération Expert</strong> : Grilles + Optimisateur</div>
-                  <div>• <strong>Tests & Validation</strong> : Testeur + Rétroactif</div>
-                  <div>• <strong>Statistiques</strong> : Toutes les analyses</div>
+                  <div>• <strong>Analyse</strong> : IA & sélection</div>
+                  <div>• <strong>Génération</strong> : Grilles</div>
+                  <div>• <strong>Statistiques</strong> : Fréquences & patterns</div>
+                  <div>• <strong>Gestion</strong> : Sauvegardes</div>
                 </div>
               </div>
             </div>

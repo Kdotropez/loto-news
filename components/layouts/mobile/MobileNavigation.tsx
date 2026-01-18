@@ -36,6 +36,7 @@ export default function MobileNavigation({
         {items.slice(0, 4).map((item) => {
           const isActive = activeTab === item.id;
           
+          const activeClass = item.color ? `${item.color} text-white` : 'bg-blue-50 text-blue-600';
           return (
             <motion.button
               key={item.id}
@@ -43,7 +44,7 @@ export default function MobileNavigation({
               onClick={() => onTabChange?.(item.id)}
               className={`relative flex flex-col items-center justify-center p-3 rounded-lg transition-colors ${
                 isActive 
-                  ? 'bg-blue-50 text-blue-600' 
+                  ? activeClass
                   : 'text-gray-600 hover:bg-gray-50'
               }`}
             >

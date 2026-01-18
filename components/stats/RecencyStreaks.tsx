@@ -59,13 +59,16 @@ export default function RecencyStreaks({ period }: { period: Period }) {
   const topPresence = [...stats].sort((a, b) => b.currentPresence - a.currentPresence).slice(0, 12);
 
   return (
-    <section aria-labelledby="recency-title" className="rounded-2xl border-2 bg-white p-4 shadow">
-      <div className="flex items-end justify-between gap-4 mb-3">
+    <section aria-labelledby="recency-title" className="card">
+      <div className="section-header">
         <div>
-          <h3 id="recency-title" className="text-lg font-bold text-slate-900">{t('rec.title')}</h3>
-          <p className="text-xs text-slate-600">{t('common.period')}: {period} • {t('common.draws')}: {draws.length}</p>
+          <h3 id="recency-title" className="section-title">{t('rec.title')}</h3>
+          <p className="section-subtitle">⏱️ Présences / absences consécutives par numéro</p>
         </div>
-        <div className="text-xs text-slate-500">{t('rec.hint')}</div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="pill pill-info">{t('common.period')}: {period}</span>
+          <span className="pill pill-muted">{t('common.draws')}: {draws.length}</span>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

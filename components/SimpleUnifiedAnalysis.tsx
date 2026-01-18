@@ -32,45 +32,71 @@ export default function SimpleUnifiedAnalysis({ analysisPeriod, onNumberSelectio
   const [desiredMainNumbers, setDesiredMainNumbers] = useState(15);
   const [desiredComplementaryNumbers, setDesiredComplementaryNumbers] = useState(3);
   const [consequences, setConsequences] = useState<any>(null);
+  const [rankTarget, setRankTarget] = useState<3 | 4 | 5>(3);
+  const [coverageTuning, setCoverageTuning] = useState(50);
+  const [costTuning, setCostTuning] = useState(50);
+  const [probTuning, setProbTuning] = useState(50);
+  const [compTuning, setCompTuning] = useState(50);
+  const [includeComplementaryInProb, setIncludeComplementaryInProb] = useState(true);
 
   // Calcule les conséquences du choix en temps réel
-  const calculateConsequences = (mainNumbers: number, complementaryNumbers: number) => {
+  const calculateConsequences = (mainNumbers: number, complementaryNumbers: number, rank: 3 | 4 | 5) => {
     // Calculs de probabilités
     const totalCombinationsMain = binomialCoefficient(49, 5);
     const selectedCombinations = binomialCoefficient(mainNumbers, 5);
-    const coveragePercentage = Math.min(100, (selectedCombinations / totalCombinationsMain) * 100);
+    const totalCombinationsAll = totalCombinationsMain * 10;
+    const complementaryFactor = Math.max(1, complementaryNumbers);
+    const selectedCombinationsAll = selectedCombinations * complementaryFactor;
+    const coveragePercentage = Math.min(100, (selectedCombinationsAll / totalCombinationsAll) * 100);
     
     // Calculs de coûts pour différentes stratégies
-    const simpleGridCost = selectedCombinations * 2.20;
+    const simpleGridCost = selectedCombinationsAll * 2.20;
     const multipleGridCost = mainNumbers <= 10 ? calculateMultipleCost(mainNumbers) : null;
     
     // Estimation du nombre de grilles pour garanties
-    const estimatedGridsRank3 = Math.ceil(selectedCombinations / 50); // Estimation grossière
-    const estimatedGridsRank4 = Math.ceil(selectedCombinations / 10);
-    const estimatedGridsRank5 = selectedCombinations;
+    const estimatedGridsRank3 = Math.ceil(selectedCombinationsAll / 50); // Estimation grossière
+    const estimatedGridsRank4 = Math.ceil(selectedCombinationsAll / 10);
+    const estimatedGridsRank5 = selectedCombinationsAll;
+    const estimatedGridsForRank = rank === 3 ? estimatedGridsRank3 : rank === 4 ? estimatedGridsRank4 : estimatedGridsRank5;
     
     // Probabilités de gains
-    const probRank3 = calculateWinProbability(mainNumbers, 3);
-    const probRank4 = calculateWinProbability(mainNumbers, 4);
-    const probRank5 = calculateWinProbability(mainNumbers, 5);
+    const probRank3Base = calculateWinProbability(mainNumbers, 3);
+    const probRank4Base = calculateWinProbability(mainNumbers, 4);
+    const probRank5Base = calculateWinProbability(mainNumbers, 5);
+    const compFactor = Math.min(1, complementaryNumbers / 10);
+    const probRank3 = probRank3Base * compFactor;
+    const probRank4 = probRank4Base * compFactor;
+    const probRank5 = probRank5Base * compFactor;
+    const probTarget = rank === 3 ? probRank3 : rank === 4 ? probRank4 : probRank5;
+    const probTargetNoComp = rank === 3 ? probRank3Base : rank === 4 ? probRank4Base : probRank5Base;
     
+    const complementaryCoveragePercent = Math.min(100, (complementaryNumbers / 10) * 100);
+    const complementaryMatchProb = complementaryCoveragePercent;
+
     return {
       coverage: {
         percentage: coveragePercentage,
-        combinations: selectedCombinations,
-        total: totalCombinationsMain
+        combinations: selectedCombinationsAll,
+        total: totalCombinationsAll
+      },
+      complementary: {
+        coveragePercent: complementaryCoveragePercent,
+        probability: complementaryMatchProb
       },
       costs: {
         allSimpleGrids: simpleGridCost,
         multipleGrid: multipleGridCost,
         optimizedRank3: estimatedGridsRank3 * 2.20,
         optimizedRank4: estimatedGridsRank4 * 2.20,
-        optimizedRank5: estimatedGridsRank5 * 2.20
+        optimizedRank5: estimatedGridsRank5 * 2.20,
+        optimizedTarget: estimatedGridsForRank * 2.20
       },
       probabilities: {
         rank3: probRank3,
         rank4: probRank4,
-        rank5: probRank5
+        rank5: probRank5,
+        target: probTarget,
+        targetNoComp: probTargetNoComp
       },
       recommendations: getRecommendations(mainNumbers, complementaryNumbers)
     };
@@ -145,15 +171,25 @@ export default function SimpleUnifiedAnalysis({ analysisPeriod, onNumberSelectio
     return recommendations;
   };
   
-  // Recalcule les conséquences quand les choix changent
-  useEffect(() => {
-    const newConsequences = calculateConsequences(desiredMainNumbers, desiredComplementaryNumbers);
+  const recalcConsequences = () => {
+    const newConsequences = calculateConsequences(desiredMainNumbers, desiredComplementaryNumbers, rankTarget);
     setConsequences(newConsequences);
-  }, [desiredMainNumbers, desiredComplementaryNumbers]);
+  };
+
+  const applyTuning = (value: number) => {
+    const main = Math.min(20, Math.max(5, Math.round(5 + (value / 100) * 15)));
+    const comp = Math.min(5, Math.max(0, Math.round((value / 100) * 5)));
+    const rank = (value < 34 ? 3 : value < 67 ? 4 : 5) as 3 | 4 | 5;
+    setDesiredMainNumbers(main);
+    setDesiredComplementaryNumbers(comp);
+    setRankTarget(rank);
+    recalcConsequences();
+  };
 
   const runCompleteAnalysis = async () => {
     setIsLoading(true);
     setAnalysisComplete(false);
+    recalcConsequences();
     
     try {
       console.log('🧠 Démarrage de l\'analyse intelligente OPTIMISÉE par IA...');
@@ -284,6 +320,10 @@ export default function SimpleUnifiedAnalysis({ analysisPeriod, onNumberSelectio
     runCompleteAnalysis();
   }, [analysisPeriod]);
 
+  useEffect(() => {
+    recalcConsequences();
+  }, [desiredMainNumbers, desiredComplementaryNumbers, rankTarget]);
+
   return (
     <div className="space-y-8">
       
@@ -311,19 +351,25 @@ export default function SimpleUnifiedAnalysis({ analysisPeriod, onNumberSelectio
                 min="5"
                 max="20"
                 value={desiredMainNumbers}
-                onChange={(e) => setDesiredMainNumbers(parseInt(e.target.value))}
+                onChange={(e) => {
+                  setDesiredMainNumbers(parseInt(e.target.value));
+                }}
                 className="flex-1 h-3 bg-blue-200 rounded-lg appearance-none cursor-pointer"
               />
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setDesiredMainNumbers(Math.max(5, desiredMainNumbers - 1))}
+                  onClick={() => {
+                    setDesiredMainNumbers(Math.max(5, desiredMainNumbers - 1));
+                  }}
                   className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors"
                 >
                   -
                 </button>
                 <span className="w-8 text-center font-bold text-blue-800">{desiredMainNumbers}</span>
                 <button
-                  onClick={() => setDesiredMainNumbers(Math.min(20, desiredMainNumbers + 1))}
+                  onClick={() => {
+                    setDesiredMainNumbers(Math.min(20, desiredMainNumbers + 1));
+                  }}
                   className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors"
                 >
                   +
@@ -346,19 +392,25 @@ export default function SimpleUnifiedAnalysis({ analysisPeriod, onNumberSelectio
                 min="0"
                 max="5"
                 value={desiredComplementaryNumbers}
-                onChange={(e) => setDesiredComplementaryNumbers(parseInt(e.target.value))}
+                onChange={(e) => {
+                  setDesiredComplementaryNumbers(parseInt(e.target.value));
+                }}
                 className="flex-1 h-3 bg-blue-200 rounded-lg appearance-none cursor-pointer"
               />
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setDesiredComplementaryNumbers(Math.max(0, desiredComplementaryNumbers - 1))}
+                  onClick={() => {
+                    setDesiredComplementaryNumbers(Math.max(0, desiredComplementaryNumbers - 1));
+                  }}
                   className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors"
                 >
                   -
                 </button>
                 <span className="w-8 text-center font-bold text-blue-800">{desiredComplementaryNumbers}</span>
                 <button
-                  onClick={() => setDesiredComplementaryNumbers(Math.min(5, desiredComplementaryNumbers + 1))}
+                  onClick={() => {
+                    setDesiredComplementaryNumbers(Math.min(5, desiredComplementaryNumbers + 1));
+                  }}
                   className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors"
                 >
                   +
@@ -370,10 +422,14 @@ export default function SimpleUnifiedAnalysis({ analysisPeriod, onNumberSelectio
             </div>
           </div>
         </div>
+
+        <div className="mt-6 text-xs text-blue-700">
+          Les calculs se mettent à jour automatiquement lorsque vous modifiez les curseurs.
+        </div>
         
         {/* Affichage des conséquences en temps réel */}
         {consequences && (
-          <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="mt-6 grid grid-cols-1 lg:grid-cols-4 gap-4">
             
             {/* Couverture */}
             <div className="bg-white p-4 rounded-lg border border-blue-200">
@@ -382,29 +438,103 @@ export default function SimpleUnifiedAnalysis({ analysisPeriod, onNumberSelectio
                 {consequences.coverage.percentage.toFixed(3)}%
               </div>
               <div className="text-xs text-blue-600">
-                {consequences.coverage.combinations.toLocaleString()} / {consequences.coverage.total.toLocaleString()} combinaisons
+                {consequences.coverage.combinations.toLocaleString()} / {consequences.coverage.total.toLocaleString()} combinaisons (avec compl.)
+              </div>
+              <div className="mt-3">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={coverageTuning}
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value);
+                    setCoverageTuning(v);
+                    applyTuning(v);
+                  }}
+                  className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
+                />
               </div>
             </div>
             
             {/* Coût optimisé */}
             <div className="bg-white p-4 rounded-lg border border-green-200">
-              <div className="text-sm font-semibold text-green-700 mb-2">💰 Coût Optimisé (Rang 3)</div>
+              <div className="text-sm font-semibold text-green-700 mb-2">💰 Coût Optimisé (Rang {rankTarget})</div>
               <div className="text-lg font-bold text-green-800">
-                {consequences.costs.optimizedRank3.toFixed(2)}€
+                {consequences.costs.optimizedTarget.toFixed(2)}€
               </div>
               <div className="text-xs text-green-600">
-                vs {consequences.costs.allSimpleGrids.toLocaleString()}€ (toutes grilles)
+                vs {consequences.costs.allSimpleGrids.toLocaleString()}€ (toutes grilles, avec compl.)
+              </div>
+              <div className="mt-3">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={costTuning}
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value);
+                    setCostTuning(v);
+                    applyTuning(v);
+                  }}
+                  className="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer"
+                />
               </div>
             </div>
             
             {/* Probabilité */}
             <div className="bg-white p-4 rounded-lg border border-purple-200">
-              <div className="text-sm font-semibold text-purple-700 mb-2">🎯 Probabilité Rang 3</div>
+              <div className="text-sm font-semibold text-purple-700 mb-2">🎯 Probabilité Rang {rankTarget}</div>
               <div className="text-lg font-bold text-purple-800">
-                {consequences.probabilities.rank3.toFixed(2)}%
+                {(includeComplementaryInProb ? consequences.probabilities.target : consequences.probabilities.targetNoComp).toFixed(2)}%
               </div>
               <div className="text-xs text-purple-600">
-                Au moins 3 numéros corrects
+                {includeComplementaryInProb ? 'Inclut le complémentaire' : 'Hors complémentaire'}
+              </div>
+              <button
+                type="button"
+                onClick={() => setIncludeComplementaryInProb((v) => !v)}
+                className="mt-2 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border border-purple-200 text-purple-700 hover:bg-purple-50"
+              >
+                {includeComplementaryInProb ? 'On' : 'Off'}
+              </button>
+              <div className="mt-3">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={probTuning}
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value);
+                    setProbTuning(v);
+                    applyTuning(v);
+                  }}
+                  className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Complémentaire */}
+            <div className="bg-white p-4 rounded-lg border border-indigo-200">
+              <div className="text-sm font-semibold text-indigo-700 mb-2">🎲 Complémentaire</div>
+              <div className="text-lg font-bold text-indigo-800">
+                {consequences.complementary.coveragePercent.toFixed(1)}%
+              </div>
+              <div className="text-xs text-indigo-600">
+                Probabilité d’avoir le numéro chance
+              </div>
+              <div className="mt-3">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={compTuning}
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value);
+                    setCompTuning(v);
+                    applyTuning(v);
+                  }}
+                  className="w-full h-2 bg-indigo-200 rounded-lg appearance-none cursor-pointer"
+                />
               </div>
             </div>
           </div>

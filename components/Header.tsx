@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Star, RefreshCw, Database } from 'lucide-react';
+import { Star, RefreshCw, Database, Trash2 } from 'lucide-react';
 import LotoCountdown from './LotoCountdown';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
@@ -81,6 +81,23 @@ export default function Header({ onRefresh, remainingCombinations = 0, remaining
       setSyncState('error');
     } finally {
       setIsRefreshing(false);
+    }
+  };
+
+  const handleResetLocalCache = () => {
+    if (typeof window === 'undefined') return;
+    const confirmed = window.confirm('Réinitialiser le cache local des tirages ?');
+    if (!confirmed) return;
+    try {
+      localStorage.removeItem('loto_tirages');
+      localStorage.removeItem('last_opendatasoft_sync');
+      setLastSync(null);
+      setImportedCount(0);
+      setSyncState('idle');
+      toast.success('Cache local réinitialisé');
+    } catch (error) {
+      console.error('Erreur reset cache:', error);
+      toast.error('Impossible de réinitialiser le cache');
     }
   };
 
@@ -251,6 +268,15 @@ export default function Header({ onRefresh, remainingCombinations = 0, remaining
             >
               <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline">Actualiser</span>
+            </button>
+
+            <button
+              onClick={handleResetLocalCache}
+              className="flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 transition-colors duration-200"
+              title="Réinitialiser le cache local"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Réinitialiser cache</span>
             </button>
 
             <div className="flex items-center gap-2 px-3 py-2 bg-green-50 text-green-700 rounded-lg">

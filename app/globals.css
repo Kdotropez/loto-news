@@ -84,6 +84,120 @@ button {
   padding: 0 1rem;
 }
 
+/* === CARTES === */
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+  border-color: #cbd5f5;
+}
+
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+/* === SECTIONS === */
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.section-subtitle {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.pill-muted {
+  color: #475569;
+  background: #f1f5f9;
+}
+
+.pill-info {
+  color: #0f766e;
+  background: #ecfeff;
+}
+
+/* === THEMES (Analyse / Génération / Stats / Gestion) === */
+.theme-analysis {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.theme-generation {
+  background: #7c3aed;
+  color: #ffffff;
+}
+
+.theme-statistics {
+  background: #0ea5e9;
+  color: #ffffff;
+}
+
+.theme-management {
+  background: #f59e0b;
+  color: #ffffff;
+}
+
+.theme-analysis-soft {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.theme-generation-soft {
+  background: #f5f3ff;
+  color: #6d28d9;
+}
+
+.theme-statistics-soft {
+  background: #f0f9ff;
+  color: #0369a1;
+}
+
+.theme-management-soft {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 1rem;
+  }
+  .stat-card {
+    padding: 0.875rem 1rem;
+  }
+}
+
 .flex {
   display: flex;
 }

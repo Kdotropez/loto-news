@@ -13,6 +13,7 @@ interface NavigationItem {
   label: string;
   icon: any;
   component?: React.ComponentType<any>;
+  color?: string;
 }
 
 interface TabletNavigationProps {
@@ -42,7 +43,7 @@ export default function TabletNavigation({
               onClick={() => onTabChange?.(item.id)}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 isActive 
-                  ? 'bg-primary-100 text-primary-700' 
+                  ? (item.color ? `${item.color} text-white` : 'bg-primary-100 text-primary-700')
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
@@ -67,7 +68,7 @@ export default function TabletNavigation({
               onClick={() => onTabChange?.(item.id)}
               className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
                 isActive 
-                  ? 'bg-primary-100 text-primary-700' 
+                  ? (item.color ? `${item.color} text-white` : 'bg-primary-100 text-primary-700')
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >

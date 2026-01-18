@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Database, Download } from 'lucide-react';
+import { BarChart3, Database, Download, Save, Target, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 // Composants responsive
@@ -61,10 +61,10 @@ export default function ResponsiveHome() {
   // - sinon: en haut à droite
   const modeButtonPositionClass =
     isMobile
-      ? 'fixed bottom-24 left-4 z-50'
+      ? 'fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] left-3 z-50'
       : isTablet && isPortrait
-        ? 'fixed bottom-24 right-4 z-50'
-        : 'fixed top-4 right-4 z-50';
+        ? 'fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] right-3 z-50'
+        : 'fixed top-[calc(5rem+env(safe-area-inset-top))] right-4 z-50';
   
   // État des données
   const [dataStatus, setDataStatus] = useState<{
@@ -128,29 +128,12 @@ export default function ResponsiveHome() {
 
   // Navigation items adaptés selon l'appareil et la complexité
   const getNavigationItems = () => {
-    const baseItems = [
-      { id: 'dashboard', label: 'Tableau de bord', icon: Database, color: 'bg-blue-500' },
-      { id: 'analysis', label: 'Analyse', icon: Database, color: 'bg-green-500' },
-      { id: 'generation', label: 'Génération', icon: Database, color: 'bg-purple-500' },
-      { id: 'saved', label: 'Sauvegardées', icon: Database, color: 'bg-orange-500' }
+    return [
+      { id: 'analysis', label: 'Analyse', icon: Target, color: 'theme-analysis' },
+      { id: 'generation', label: 'Génération', icon: Zap, color: 'theme-generation' },
+      { id: 'statistics', label: 'Stats', icon: BarChart3, color: 'theme-statistics' },
+      { id: 'management', label: 'Gestion', icon: Save, color: 'theme-management' }
     ];
-
-    // Ajouter des items selon la complexité
-    if (complexityLevel === 'intermediate' || complexityLevel === 'expert') {
-      baseItems.push(
-        { id: 'statistics', label: 'Statistiques', icon: Database, color: 'bg-red-500' },
-        { id: 'testing', label: 'Tests', icon: Database, color: 'bg-indigo-500' }
-      );
-    }
-
-    if (complexityLevel === 'expert') {
-      baseItems.push(
-        { id: 'advanced', label: 'Avancé', icon: Database, color: 'bg-pink-500' },
-        { id: 'retroactive', label: 'Rétroactif', icon: Database, color: 'bg-teal-500' }
-      );
-    }
-
-    return baseItems;
   };
 
   // Actions rapides pour mobile
@@ -495,25 +478,29 @@ export default function ResponsiveHome() {
         {/* Contenu principal selon le niveau de complexité */}
         {renderContent()}
 
-        {/* Fréquences + tendances (paysage) */}
-        <div className="mt-8">
-          <FrequencyTrends period={globalAnalysisPeriod as any} />
-        </div>
+        {complexityLevel !== 'beginner' && (
+          <>
+            {/* Fréquences + tendances (paysage) */}
+            <div className="mt-8">
+              <FrequencyTrends period={globalAnalysisPeriod as any} />
+            </div>
 
-        {/* Récence + séries */}
-        <div className="mt-8">
-          <RecencyStreaks period={globalAnalysisPeriod as any} />
-        </div>
+            {/* Récence + séries */}
+            <div className="mt-8">
+              <RecencyStreaks period={globalAnalysisPeriod as any} />
+            </div>
 
-        {/* Cooccurrence des paires */}
-        <div className="mt-8">
-          <CooccurrencePairs period={globalAnalysisPeriod as any} />
-        </div>
+            {/* Cooccurrence des paires */}
+            <div className="mt-8">
+              <CooccurrencePairs period={globalAnalysisPeriod as any} />
+            </div>
 
-        {/* Patterns */}
-        <div className="mt-8">
-          <PatternsOverview period={globalAnalysisPeriod as any} />
-        </div>
+            {/* Patterns */}
+            <div className="mt-8">
+              <PatternsOverview period={globalAnalysisPeriod as any} />
+            </div>
+          </>
+        )}
 
         {/* EV panel */}
         <div className="mt-8">
@@ -537,6 +524,7 @@ export default function ResponsiveHome() {
       {showComplexitySelector && (
         <ComplexitySelector
           showAsModal={true}
+          mode="selector"
           onLevelChange={handleComplexityChange}
           onClose={() => setShowComplexitySelector(false)}
         />
